@@ -7,19 +7,18 @@ find_package(verilator REQUIRED)
 
 file(GLOB VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hdl/*.v)
 
-qt5_generate_moc(src/window.h ${CMAKE_CURRENT_BINARY_DIR}/moc_window.cpp)
-qt5_generate_moc(src/monitor.h ${CMAKE_CURRENT_BINARY_DIR}/moc_monitor.cpp)
+qt5_generate_moc(sim/window.h ${CMAKE_CURRENT_BINARY_DIR}/moc_window.cpp)
+qt5_generate_moc(sim/monitor.h ${CMAKE_CURRENT_BINARY_DIR}/moc_monitor.cpp)
 
 add_executable(minesweeper-tt08
-    src/bitmap.cpp
-    src/main.cpp
-    src/monitor.cpp
-    src/simulator.cpp
-    src/window.cpp
+    sim/main.cpp
+    sim/monitor.cpp
+    sim/simulator.cpp
+    sim/window.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/moc_window.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/moc_monitor.cpp
 )
-target_include_directories(minesweeper-tt08 PRIVATE src)
+target_include_directories(minesweeper-tt08 PRIVATE sim)
 target_compile_features(minesweeper-tt08 PRIVATE cxx_std_20)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(minesweeper-tt08 PRIVATE -Wall -W -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-sign-compare $<$<CONFIG:Release>:-march=native -flto>)
@@ -31,5 +30,5 @@ verilate(minesweeper-tt08
     TOP_MODULE tt_um_minesweeper
     OPT_FAST "-O3 -march=native"
     SOURCES
-    rtl/tt_um_minesweeper.v
+    src/tt_um_minesweeper.v
 )
