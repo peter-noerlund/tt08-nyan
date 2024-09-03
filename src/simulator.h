@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vtop.h"
+#include "Vtt_um_minesweeper.h"
 
 #include <atomic>
 #include <cstdint>
@@ -10,9 +10,9 @@
 #include <span>
 #include <vector>
 
-class Vtop;
+class Vtt_um_minesweeper;
 
-namespace tt06
+namespace tt08
 {
 
 class Monitor;
@@ -77,7 +77,7 @@ private:
 
     struct Context
     {
-        Vtop top;
+        Vtt_um_minesweeper top;
         bool oldVsync = false;
         bool oldHsync = false;
         unsigned int row = 0;
@@ -103,4 +103,4 @@ private:
     std::shared_ptr<Context> m_context;
 };
     
-} // namespace tt06
+} // namespace tt08

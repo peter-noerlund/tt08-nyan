@@ -3,7 +3,7 @@
 `timescale 1ns/1ps
 `default_nettype none
 
-module top
+module tt_um_minesweeper
     (
         input wire [7:0] ui_in,
         output wire [7:0] uo_out,

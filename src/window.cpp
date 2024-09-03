@@ -12,7 +12,7 @@
 
 #include <cstddef>
 
-namespace tt06
+namespace tt08
 {
 
 Window::Window(QWidget* parent)
@@ -135,4 +135,4 @@ void Window::refreshMonitor()
 }
 
 
-} // namespace tt06
+} // namespace tt08

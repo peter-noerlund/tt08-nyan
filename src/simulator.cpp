@@ -1,12 +1,12 @@
 #include "simulator.h"
 
 #include "monitor.h"
-#include "Vtop.h"
+#include "Vtt_um_minesweeper.h"
 
 #include <iostream>
 #include <thread>
 
-namespace tt06
+namespace tt08
 {
 
 Simulator::Simulator(Monitor* monitor)
@@ -129,4 +129,4 @@ void Simulator::finish(Context& context)
     context.stopCondition.notify_one();
 }
 
-} // namespace tt06
+} // namespace tt08

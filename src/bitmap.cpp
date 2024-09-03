@@ -3,7 +3,7 @@
 #include <array>
 #include <cstdint>
 
-namespace tt06
+namespace tt08
 {
 
 Bitmap::Bitmap(unsigned int width, unsigned int height)
@@ -98,4 +98,4 @@ Bitmap::Bitmap(unsigned int width, unsigned int height)
     m_pixels = {m_bitmap.data() + sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader) + colorTableSize, m_width * m_height};
 }
 
-} // namespace tt06
+} // namespace tt08

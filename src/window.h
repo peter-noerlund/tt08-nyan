@@ -12,7 +12,7 @@
 #include <array>
 #include <memory>
 
-namespace tt06
+namespace tt08
 {
 
 class Window : public QWidget
@@ -43,4 +43,4 @@ private:
     QTimer m_timer;
 };
 
-} // namespace tt06
+} // namespace tt08

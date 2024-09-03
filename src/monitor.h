@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace tt06
+namespace tt08
 {
 
 class Monitor : public QOpenGLWidget
@@ -41,4 +41,4 @@ private:
     unsigned int m_height = 0;
 };
 
-} // namespace tt06
+} // namespace tt08

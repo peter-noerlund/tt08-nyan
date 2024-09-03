@@ -7,7 +7,7 @@
 #include <QPaintEvent>
 #include <QRect>
 
-namespace tt06
+namespace tt08
 {
 
 Monitor::Monitor(QWidget* parent)
@@ -41,4 +41,4 @@ void Monitor::redraw()
     qApp->postEvent(this, new QPaintEvent(QRect(0, 0, m_width, m_height)));
 }
 
-} // namespace tt06
+} // namespace tt08

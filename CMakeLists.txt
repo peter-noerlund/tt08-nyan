@@ -28,8 +28,8 @@ target_link_libraries(minesweeper-tt08 PRIVATE $<$<CONFIG:Release>:-flto>)
 target_link_libraries(minesweeper-tt08 PRIVATE Qt5::Widgets Qt5::OpenGL)
 
 verilate(minesweeper-tt08
-    TOP_MODULE top
+    TOP_MODULE tt_um_minesweeper
     OPT_FAST "-O3 -march=native"
     SOURCES
-    rtl/top.v
+    rtl/tt_um_minesweeper.v
 )

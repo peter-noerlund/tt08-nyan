@@ -5,7 +5,7 @@
 #include <vector>
 #include <span>
 
-namespace tt06
+namespace tt08
 {
 
 class Bitmap
@@ -56,4 +56,4 @@ private:
     unsigned int m_height;
 };
 
-} // namespace tt06
+} // namespace tt08
