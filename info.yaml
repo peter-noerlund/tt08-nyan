@@ -8,7 +8,7 @@ project:
   tiles:        1x1
   top_module:   tt_um_minesweeper
   source_files:
-    - src/tt_um_minesweeper.v
+    - tt_um_minesweeper.v
 
 pinout:
   ui[0]: ""
