@@ -23,43 +23,13 @@ module graphics
     localparam X_PIXEL_BITS = $clog2(VGA_WIDTH + H_FRONT_PORCH + H_SYNC_PULSE + H_BACK_PORCH);
     localparam Y_PIXEL_BITS = $clog2(VGA_HEIGHT + V_FRONT_PORCH + V_SYNC_PULSE + V_BACK_PORCH);
 
-    localparam NYAN_LEFT = 128;
-    localparam NYAN_TOP0 = 128;
-    localparam NYAN_TOP1 = 136;
     localparam NYAN_SCALE = 8;
-
-    localparam NYAN_TAIL0_LEFT = NYAN_LEFT;
-    localparam NYAN_TAIL0_RIGHT = NYAN_TAIL0_LEFT + 6 * NYAN_SCALE;
-    localparam NYAN_TAIL0_TOP = NYAN_TOP0 + 8 * NYAN_SCALE;
-    localparam NYAN_TAIL0_BOTTOM = NYAN_TAIL0_TOP + 6 * NYAN_SCALE;
-
-    localparam NYAN_TAIL1_LEFT = NYAN_LEFT;
-    localparam NYAN_TAIL1_RIGHT = NYAN_TAIL1_LEFT + 6 * NYAN_SCALE;
-    localparam NYAN_TAIL1_TOP = NYAN_TOP1 + 11 * NYAN_SCALE;
-    localparam NYAN_TAIL1_BOTTOM = NYAN_TAIL1_TOP + 5 * NYAN_SCALE;
-
-    localparam NYAN_BASE_WIDTH = 27 * NYAN_SCALE;
-    localparam NYAN_BASE_HEIGHT = 17 * NYAN_SCALE;
-
-    localparam NYAN_BASE0_LEFT = NYAN_TAIL0_RIGHT;
-    localparam NYAN_BASE0_RIGHT = NYAN_BASE0_LEFT + NYAN_BASE_WIDTH;
-    localparam NYAN_BASE0_TOP = NYAN_TOP0;
-    localparam NYAN_BASE0_BOTTOM = NYAN_TOP0 + NYAN_BASE_HEIGHT;
-
-    localparam NYAN_BASE1_LEFT = NYAN_TAIL1_RIGHT;
-    localparam NYAN_BASE1_RIGHT = NYAN_BASE1_LEFT + NYAN_BASE_WIDTH;
-    localparam NYAN_BASE1_TOP = NYAN_TOP1;
-    localparam NYAN_BASE1_BOTTOM = NYAN_TOP1 + NYAN_BASE_HEIGHT;
-
-    localparam NYAN_FEET0_LEFT = NYAN_LEFT + 5 * NYAN_SCALE;
-    localparam NYAN_FEET0_RIGHT = NYAN_FEET0_LEFT + 25 * NYAN_SCALE;
-    localparam NYAN_FEET0_TOP = NYAN_BASE0_BOTTOM;
-    localparam NYAN_FEET0_BOTTOM = NYAN_FEET0_TOP + 3 * NYAN_SCALE;
-
-    localparam NYAN_FEET1_LEFT = NYAN_LEFT + 6 * NYAN_SCALE;
-    localparam NYAN_FEET1_RIGHT = NYAN_FEET1_LEFT + 24 * NYAN_SCALE;
-    localparam NYAN_FEET1_TOP = NYAN_BASE1_BOTTOM;
-    localparam NYAN_FEET1_BOTTOM = NYAN_FEET1_TOP + 3 * NYAN_SCALE;
+    localparam NYAN_WIDTH = 34 * NYAN_SCALE;
+    localparam NYAN_HEIGHT = 22 * NYAN_SCALE;
+    localparam NYAN_TOP = 128;
+    localparam NYAN_LEFT = 128;
+    localparam NYAN_BOTTOM = NYAN_TOP + NYAN_HEIGHT;
+    localparam NYAN_RIGHT = NYAN_LEFT + NYAN_WIDTH;
 
     reg hsync;
     reg vsync;
@@ -72,13 +42,11 @@ module graphics
 
     reg [4:0] frame_counter;
 
-    assign vga_pmod = {hsync, blue[1], green[1], red[1], vsync, blue[0], green[0], red[0]};
+    assign vga_pmod = {hsync, blue[0], green[0], red[0], vsync, blue[1], green[1], red[1]};
  
-    `include "img_base.v"
-    `include "img_feet0.v"
-    `include "img_feet1.v"
-    `include "img_tail0.v"
-    `include "img_tail1.v"
+    `include "palette.v";
+    `include "frame0.v"
+    `include "frame1.v"
 
     always @ (posedge clk) begin
         if (!rst_n) begin
@@ -111,18 +79,21 @@ module graphics
                 pixel_x <= pixel_x + 1;
             end
 
-            if (frame_counter[4] && pixel_x >= NYAN_BASE0_LEFT && pixel_x < NYAN_BASE0_RIGHT && pixel_y >= NYAN_BASE0_TOP && pixel_y < NYAN_BASE0_BOTTOM) begin
-                {blue, green, red} <= img_base[(pixel_y - NYAN_BASE0_TOP) / NYAN_SCALE][(pixel_x - NYAN_BASE0_LEFT) / NYAN_SCALE * 6 + 5 -: 6];
-            end else if (!frame_counter[4] && pixel_x >= NYAN_BASE1_LEFT && pixel_x < NYAN_BASE1_RIGHT && pixel_y >= NYAN_BASE1_TOP && pixel_y < NYAN_BASE1_BOTTOM) begin
-                {blue, green, red} <= img_base[(pixel_y - NYAN_BASE1_TOP) / NYAN_SCALE][(pixel_x - NYAN_BASE1_LEFT) / NYAN_SCALE * 6 + 5 -: 6];
-            end else if (frame_counter[4] && pixel_x >= NYAN_FEET0_LEFT && pixel_x < NYAN_FEET0_RIGHT && pixel_y >= NYAN_FEET0_TOP && pixel_y < NYAN_FEET0_BOTTOM) begin
-                {blue, green, red} <= img_feet0[(pixel_y - NYAN_FEET0_TOP) / NYAN_SCALE][(pixel_x - NYAN_FEET0_LEFT) / NYAN_SCALE * 6 + 5 -: 6];
-            end else if (!frame_counter[4] && pixel_x >= NYAN_FEET1_LEFT && pixel_x < NYAN_FEET1_RIGHT && pixel_y >= NYAN_FEET1_TOP && pixel_y < NYAN_FEET1_BOTTOM) begin
-                {blue, green, red} <= img_feet1[(pixel_y - NYAN_FEET1_TOP) / NYAN_SCALE][(pixel_x - NYAN_FEET1_LEFT) / NYAN_SCALE * 6 + 5 -: 6];
-            end else if (frame_counter[4] && pixel_x >= NYAN_TAIL0_LEFT && pixel_x < NYAN_TAIL0_RIGHT && pixel_y >= NYAN_TAIL0_TOP && pixel_y < NYAN_TAIL0_BOTTOM) begin
-                {blue, green, red} <= img_tail0[(pixel_y - NYAN_TAIL0_TOP) / NYAN_SCALE][(pixel_x - NYAN_TAIL0_LEFT) / NYAN_SCALE * 6 + 5 -: 6];
-            end else if (!frame_counter[4] && pixel_x >= NYAN_TAIL1_LEFT && pixel_x < NYAN_TAIL1_RIGHT && pixel_y >= NYAN_TAIL1_TOP && pixel_y < NYAN_TAIL1_BOTTOM) begin
-                {blue, green, red} <= img_tail1[(pixel_y - NYAN_TAIL1_TOP) / NYAN_SCALE][(pixel_x - NYAN_TAIL1_LEFT) / NYAN_SCALE * 6 + 5 -: 6];
+            if (pixel_x >= NYAN_LEFT && pixel_x < NYAN_RIGHT && pixel_y >= NYAN_TOP && pixel_y < NYAN_BOTTOM) begin
+                {red, green, blue} <=
+                    palette[frame_counter[4] == 1'b0 ?
+                    frame0[(pixel_x - NYAN_LEFT) / NYAN_SCALE][(pixel_y - NYAN_TOP) / NYAN_SCALE] :
+                    frame1[(pixel_x - NYAN_LEFT) / NYAN_SCALE][(pixel_y - NYAN_TOP) / NYAN_SCALE]];
+            end else if (pixel_x >= 64 && pixel_x < NYAN_LEFT && pixel_y >= NYAN_TOP && pixel_y < NYAN_BOTTOM) begin
+                {red, green, blue} <=
+                    palette[frame_counter[4] == 1'b1 ?
+                    frame0[0][(pixel_y - NYAN_TOP) / NYAN_SCALE] :
+                    frame1[0][(pixel_y - NYAN_TOP) / NYAN_SCALE]];
+            end else if (pixel_x < 64 && pixel_y >= NYAN_TOP && pixel_y < NYAN_BOTTOM) begin
+                {red, green, blue} <=
+                    palette[frame_counter[4] == 1'b0 ?
+                    frame0[0][(pixel_y - NYAN_TOP) / NYAN_SCALE] :
+                    frame1[0][(pixel_y - NYAN_TOP) / NYAN_SCALE]];
             end else begin
                 {red, green, blue} <= 6'b000111;
             end
