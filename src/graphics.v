@@ -32,11 +32,7 @@ module graphics
     reg [X_PIXEL_BITS - 1 : 0] pixel_x;
     reg [Y_PIXEL_BITS - 1 : 0] pixel_y;
 
-    wire [15:0] random_value;
-
     assign vga_pmod = {hsync, blue[1], green[1], red[1], vsync, blue[0], green[0], red[0]};
-
-    //xorshift rng(.clk(clk), .rst_n(rst_n), .enable(1), .value(random_value));
 
     reg [1631 : 0] bitmap [167 : 0];
     initial begin

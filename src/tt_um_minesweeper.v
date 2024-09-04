@@ -16,5 +16,8 @@ module tt_um_minesweeper
     );
     /* verilator lint_on UNUSED */
 
+    assign uio_out = 8'b00000000;
+    assign uio_oe = 8'b00000000;
+
     graphics gfx(.clk(clk), .rst_n(rst_n), .vga_pmod(uo_out));
 endmodule
