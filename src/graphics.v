@@ -23,9 +23,9 @@ module graphics
     localparam X_PIXEL_BITS = $clog2(VGA_WIDTH + H_FRONT_PORCH + H_SYNC_PULSE + H_BACK_PORCH);
     localparam Y_PIXEL_BITS = $clog2(VGA_HEIGHT + V_FRONT_PORCH + V_SYNC_PULSE + V_BACK_PORCH);
 
-    localparam NYAN_LEFT = 188;
-    localparam NYAN_TOP0 = 160;
-    localparam NYAN_TOP1 = 165;
+    localparam NYAN_LEFT = 128;
+    localparam NYAN_TOP0 = 128;
+    localparam NYAN_TOP1 = 136;
     localparam NYAN_SCALE = 8;
 
     localparam NYAN_TAIL0_LEFT = NYAN_LEFT;
@@ -73,7 +73,7 @@ module graphics
     reg [4:0] frame_counter;
 
     assign vga_pmod = {hsync, blue[1], green[1], red[1], vsync, blue[0], green[0], red[0]};
-
+ 
     `include "img_base.v"
     `include "img_feet0.v"
     `include "img_feet1.v"
