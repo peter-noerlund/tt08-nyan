@@ -33,7 +33,6 @@ verilate(minesweeper-tt08
     SOURCES
     src/tt_um_minesweeper.v
     src/graphics.v
-    src/xorshift.v
 )
 
 add_executable(bmp2verilog tools/bmp2verilog.cpp)
