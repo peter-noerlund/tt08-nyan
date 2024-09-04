@@ -31,4 +31,6 @@ verilate(minesweeper-tt08
     OPT_FAST "-O3 -march=native"
     SOURCES
     src/tt_um_minesweeper.v
+    src/graphics.v
+    src/xorshift.v
 )
