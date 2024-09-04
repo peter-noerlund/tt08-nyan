@@ -3,6 +3,7 @@
 `default_nettype none
 
 module tt_um_minesweeper
+    /* verilator lint_off UNUSED */
     (
         input wire [7:0] ui_in,
         output wire [7:0] uo_out,
@@ -13,6 +14,7 @@ module tt_um_minesweeper
         input wire clk,
         input wire rst_n
     );
+    /* verilator lint_on UNUSED */
 
     localparam HORI_WIDTH = 640;
     localparam HORI_FRONT_PORCH = 16;
