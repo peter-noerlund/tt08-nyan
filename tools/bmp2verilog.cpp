@@ -29,7 +29,7 @@ struct BitmapInfoHeader
     std::uint32_t colorsImportant;
 };
 
-static void bmp2verilog(const char* filename)
+static void bmp2verilog(const char* name, const char* filename)
 {
     std::ifstream file;
     file.exceptions(std::ifstream::badbit | std::ifstream::failbit);
@@ -70,12 +70,12 @@ static void bmp2verilog(const char* filename)
     file.read(reinterpret_cast<char*>(pixels.data()), pixels.size());
     file.close();
 
-    std::cout << "reg [" << (infoHeader.width * 6 - 1) << " : 0] bitmap [" << (infoHeader.height - 1) << " : 0];\n";
+    std::cout << "reg [" << (infoHeader.width * 6 - 1) << " : 0] " << name << " [" << (infoHeader.height - 1) << " : 0];\n";
     std::cout << "initial begin\n";
 
     for (std::int32_t y = 0; y != infoHeader.height; ++y)
     {
-        std::cout << "    bitmap[" << y << "] = " << (infoHeader.width * 6) << "'b";
+        std::cout << "    " << name << "[" << y << "] = " << (infoHeader.width * 6) << "'b";
         for (std::int32_t x = 0; x != infoHeader.width; ++x)
         {
             for (int c = 0; c != 3; ++c)
@@ -94,15 +94,15 @@ static void bmp2verilog(const char* filename)
 
 int main(int argc, char** argv)
 {
-    if (argc < 2)
+    if (argc < 3)
     {
-        std::cerr << "Usage: bmp2verilog FILE" << std::endl;
+        std::cerr << "Usage: bmp2verilog NAME FILE" << std::endl;
         return EXIT_FAILURE;
     }
 
     try
     {
-        bmp2verilog(argv[1]);
+        bmp2verilog(argv[1], argv[2]);
     }
     catch (const std::exception& exception)
     {
