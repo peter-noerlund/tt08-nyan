@@ -75,7 +75,7 @@ static void bmp2verilog(const char* name, const char* filename)
 
     for (std::int32_t y = 0; y != infoHeader.height; ++y)
     {
-        std::cout << "    " << name << "[" << y << "] = " << (infoHeader.width * 6) << "'b";
+        std::cout << "    " << name << "[" << (infoHeader.height - y - 1) << "] = " << (infoHeader.width * 6) << "'b";
         for (std::int32_t x = 0; x != infoHeader.width; ++x)
         {
             for (int c = 0; c != 3; ++c)

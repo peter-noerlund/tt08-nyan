@@ -85,7 +85,7 @@ module graphics
                 pixel_y >= 160 &&
                 pixel_y < 160 + 17 * 8
             ) begin
-                {blue, green, red} <= img_base[16 - (pixel_y - 160) / 8][(26 - (pixel_x - 188 - 6 * 8) / 8) * 6 + 5 -: 6];
+                {blue, green, red} <= img_base[(pixel_y - 160) / 8][(26 - (pixel_x - 188 - 6 * 8) / 8) * 6 + 5 -: 6];
             end else if (
                 !frame_counter[4] &&
                 pixel_x >= 188 + 6 * 8 &&
@@ -93,7 +93,7 @@ module graphics
                 pixel_y >= 165 &&
                 pixel_y < 165 + 17 * 8
             ) begin
-                {blue, green, red} <= img_base[16 - (pixel_y - 165) / 8][(26 - (pixel_x - 188 - 6 * 8) / 8) * 6 + 5 -: 6];
+                {blue, green, red} <= img_base[(pixel_y - 165) / 8][(26 - (pixel_x - 188 - 6 * 8) / 8) * 6 + 5 -: 6];
             end else if (
                 frame_counter[4] &&
                 pixel_x >= 188 + 5 * 8 &&
@@ -101,7 +101,7 @@ module graphics
                 pixel_y >= 160 + 17 * 8 &&
                 pixel_y < 160 + 17 * 8 + 3 * 8
             ) begin
-                {blue, green, red} <= img_feet0[2 - (pixel_y - 160 - 17 * 8) / 8][(24 - (pixel_x - 188 - 5 * 8) / 8) * 6 + 5 -: 6];
+                {blue, green, red} <= img_feet0[(pixel_y - 160 - 17 * 8) / 8][(24 - (pixel_x - 188 - 5 * 8) / 8) * 6 + 5 -: 6];
             end else if (
                 !frame_counter[4] &&
                 pixel_x >= 188 + 6 * 8 &&
@@ -109,7 +109,7 @@ module graphics
                 pixel_y >= 165 + 17 * 8 &&
                 pixel_y < 165 + 17 * 8 + 3 * 8
             ) begin
-                {blue, green, red} <= img_feet1[2 - (pixel_y - 165 - 17 * 8) / 8][(23 - (pixel_x - 188 - 6 * 8) / 8) * 6 + 5 -: 6];
+                {blue, green, red} <= img_feet1[(pixel_y - 165 - 17 * 8) / 8][(23 - (pixel_x - 188 - 6 * 8) / 8) * 6 + 5 -: 6];
             end else if (
                 frame_counter[4] &&
                 pixel_x >= 188 &&
@@ -117,7 +117,7 @@ module graphics
                 pixel_y >= 160 + 8 * 8 &&
                 pixel_y < 160 + 8 * 8 + 6 * 8
             ) begin
-                {blue, green, red} <= img_tail0[5 - (pixel_y - 160 - 8 * 8) / 8][(5 - (pixel_x - 188) / 8) * 6 + 5 -: 6];
+                {blue, green, red} <= img_tail0[(pixel_y - 160 - 8 * 8) / 8][(5 - (pixel_x - 188) / 8) * 6 + 5 -: 6];
             end else if (
                 !frame_counter[4] &&
                 pixel_x >= 188 &&
@@ -125,7 +125,7 @@ module graphics
                 pixel_y >= 160 + 11 * 8 &&
                 pixel_y < 160 + 11 * 8 + 5 * 8
             ) begin
-                {blue, green, red} <= img_tail1[4 - (pixel_y - 160 - 11 * 8) / 8][(5 - (pixel_x - 188) / 8) * 6 + 5 -: 6];
+                {blue, green, red} <= img_tail1[(pixel_y - 160 - 11 * 8) / 8][(5 - (pixel_x - 188) / 8) * 6 + 5 -: 6];
             end else begin
                 {red, green, blue} <= 6'b000111;
             end
