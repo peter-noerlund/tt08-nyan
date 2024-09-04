@@ -82,14 +82,8 @@ module graphics
 
     always @ (posedge clk) begin
         if (!rst_n) begin
-            pixel_x <= {X_PIXEL_BITS{1'b0}};
-            pixel_y <= {Y_PIXEL_BITS{1'b0}};
             hsync <= 1'b1;
             vsync <= 1'b1;
-            red <= 2'd0;
-            green <= 2'd0;
-            blue <= 2'd0;
-            frame_counter <= 5'd0;
         end else begin
             if (pixel_x == VGA_WIDTH + H_FRONT_PORCH) begin
                 hsync <= 1'b1;
