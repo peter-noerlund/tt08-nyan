@@ -79,13 +79,6 @@ module graphics
                 pixel_x <= pixel_x + 1;
             end
 
-            /*
-
-                x -> 188 tail(48) base(216) 188
-                y -> 160 feet(24) base(136) 160
-
-            */
-
             if (frame_counter[4] &&
                 pixel_x >= 188 + 6 * 8 &&
                 pixel_x < 188 + 6 * 8 + 27 * 8 &&
@@ -136,16 +129,6 @@ module graphics
             end else begin
                 {red, green, blue} <= 6'b000111;
             end
-            /*
-            if (pixel_x >= 100 && pixel_x < 100 + 34 * 8 && pixel_y > 100 && pixel_y < 100 + 21 * 8) begin
-                if (frame_counter[4]) begin
-                    {blue, green, red} <= frame0[20 - (pixel_y - 100) / 8][(33 - (pixel_x - 100) / 8) * 6 + 5 -: 6];
-                end else begin
-                    {blue, green, red} <= frame1[20 - (pixel_y - 100) / 8][(33 - (pixel_x - 100) / 8) * 6 + 5 -: 6];
-                end
-            end else begin
-            end
-            */
         end
     end
 endmodule
