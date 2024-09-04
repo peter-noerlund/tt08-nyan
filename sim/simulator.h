@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vtt_um_minesweeper.h"
+#include "Vtt_um_nyan.h"
 
 #include <atomic>
 #include <cstdint>
@@ -77,7 +77,7 @@ private:
 
     struct Context
     {
-        Vtt_um_minesweeper top;
+        Vtt_um_nyan top;
         bool oldVsync = false;
         bool oldHsync = false;
         unsigned int row = 0;

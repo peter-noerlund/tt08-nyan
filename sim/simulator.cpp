@@ -1,7 +1,6 @@
 #include "simulator.h"
 
 #include "monitor.h"
-#include "Vtt_um_minesweeper.h"
 
 #include <iostream>
 #include <thread>
