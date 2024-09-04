@@ -9,6 +9,7 @@ project:
   top_module:   tt_um_minesweeper
   source_files:
     - tt_um_minesweeper.v
+    - graphics.v
 
 pinout:
   ui[0]: ""
