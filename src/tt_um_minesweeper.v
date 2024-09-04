@@ -44,7 +44,6 @@ module tt_um_minesweeper
     reg [1:0] blue;
     reg [9:0] x;
     reg [9:0] y;
-    reg initialized;
     reg [4:0] cur_x;
     reg [4:0] cur_y;
     reg last_left;
@@ -53,7 +52,6 @@ module tt_um_minesweeper
     reg last_down;
     reg last_press;
 
-    reg [TILE_COUNT - 1 : 0] bombs;
     reg [TILE_COUNT - 1 : 0] state;
     reg [63:0] tile[31:0];
     reg [63:0] bomb[31:0];
@@ -79,7 +77,6 @@ module tt_um_minesweeper
             blue <= 2'd0;
             cur_x <= 5'd0;
             cur_y <= 5'd0;
-            initialized <= 1'b0;
             last_left <= 1'b0;
             last_right <= 1'b0;
             last_up <= 1'b0;
@@ -133,23 +130,18 @@ module tt_um_minesweeper
 
             if (last_down && !down) begin
                 cur_y <= cur_y + 5'd1;
-                $display("state=%b", state);
             end else if (last_up && !up) begin
                 cur_y <= cur_y - 5'd1;
-                $display("state=%b", state);
             end
 
             if (last_left && !left) begin
                 cur_x <= cur_x - 5'd1;
-                $display("state=%b", state);
             end else if (last_right && !right) begin
                 cur_x <= cur_x + 5'd1;
-                $display("state=%b", state);
             end
 
             if (last_press && !press) begin
                 state[{5'd0, cur_y} * HORI_TILES + {5'd0, cur_x}] <= 1'b1;
-                $display("state=%b", state);
             end
 
             last_left <= left;
