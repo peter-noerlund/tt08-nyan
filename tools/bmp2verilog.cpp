@@ -57,10 +57,16 @@ static void bmp2verilog(const char* filename)
         throw std::invalid_argument("Compressed bitmaps are not supported");
     }
 
+    unsigned int widthInBytes = infoHeader.width * 3;
+    if (widthInBytes % 4 != 0)
+    {
+        widthInBytes += 4 - widthInBytes % 4;
+    }
+
     file.seekg(fileHeader.bitsOffset, std::ifstream::beg);
 
     std::vector<std::uint8_t> pixels;
-    pixels.resize(infoHeader.width * infoHeader.height * 3);
+    pixels.resize(widthInBytes * infoHeader.height);
     file.read(reinterpret_cast<char*>(pixels.data()), pixels.size());
     file.close();
 
@@ -75,7 +81,7 @@ static void bmp2verilog(const char* filename)
             for (int c = 0; c != 3; ++c)
             {
                 static const std::array<std::string_view, 4> bits = {"00", "01", "10", "11"};
-                auto val = pixels.at(y * infoHeader.width * 3 + x * 3 + c) / 85;
+                auto val = pixels.at(y * widthInBytes + x * 3 + c) / 85;
 
                 std::cout << bits.at(val);
             }
