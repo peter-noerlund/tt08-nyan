@@ -81,7 +81,7 @@ static void bmp2verilog(const char* name, const char* filename)
             for (int c = 0; c != 3; ++c)
             {
                 static const std::array<std::string_view, 4> bits = {"00", "01", "10", "11"};
-                auto val = pixels.at(y * widthInBytes + x * 3 + c) / 85;
+                auto val = pixels.at(y * widthInBytes + (infoHeader.width - x - 1) * 3 + c) / 85;
 
                 std::cout << bits.at(val);
             }
