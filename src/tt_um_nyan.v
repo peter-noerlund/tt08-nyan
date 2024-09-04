@@ -2,7 +2,7 @@
 
 `default_nettype none
 
-module tt_um_minesweeper
+module tt_um_nyan
     /* verilator lint_off UNUSED */
     (
         input wire [7:0] ui_in,

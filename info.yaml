@@ -1,14 +1,14 @@
 project:
-  title:        minesweeper
+  title:        nyan
   author:       Peter Nørlund
   discord:      pchri03.
-  description:  Minesweeper
+  description:  Nyan Cat
   language:     Verilog
   clock_hz:     25175000
   tiles:        1x1
-  top_module:   tt_um_minesweeper
+  top_module:   tt_um_nyan
   source_files:
-    - tt_um_minesweeper.v
+    - tt_um_nyan.v
     - graphics.v
 
 pinout:

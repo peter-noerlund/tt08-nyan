@@ -27,11 +27,11 @@ target_link_libraries(minesweeper-tt08 PRIVATE $<$<CONFIG:Release>:-flto>)
 target_link_libraries(minesweeper-tt08 PRIVATE Qt5::Widgets Qt5::OpenGL)
 
 verilate(minesweeper-tt08
-    TOP_MODULE tt_um_minesweeper
+    TOP_MODULE tt_um_nyan
     OPT_FAST "-O3 -march=native"
     VERILATOR_ARGS -Wall -I${CMAKE_CURRENT_SOURCE_DIR}/src
     SOURCES
-    src/tt_um_minesweeper.v
+    src/tt_um_nyan.v
     src/graphics.v
 )
 
