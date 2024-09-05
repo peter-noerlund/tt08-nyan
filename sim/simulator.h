@@ -6,6 +6,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <cstdint>
+#include <fstream>
 #include <memory>
 #include <mutex>
 #include <span>
@@ -61,6 +62,8 @@ public:
     }
     
     void setValue(Input input, bool value);
+    void startRecording();
+    void stopRecording();
     void run();
 
 private:
@@ -77,15 +80,24 @@ private:
     struct Context
     {
         Vtt_um_nyan top;
+        std::chrono::high_resolution_clock::time_point lastStep = {};
+
+        // Video stuff
         bool oldVsync = false;
         bool oldHsync = false;
         unsigned int row = 0;
         unsigned int column = 0;
         Monitor* monitor = nullptr;
-        std::chrono::high_resolution_clock::time_point lastFrame = {};
+
+        // Audio stuff
+        unsigned int pwm_pos = 0;
+        unsigned int pwm_high = 0;
+        std::vector<std::uint16_t> samples;
+        std::ofstream stream;
 
         std::array<std::uint8_t, 64> filler1;
 
+        std::atomic_bool recording = false;
         std::atomic_bool stopPending = false;
         std::atomic_uint32_t nextInputs = 0;
         
@@ -99,6 +111,7 @@ private:
     static bool step(Context& context);
     static void finish(Context& context);
     static void updateMonitor(Context& context);
+    static void updateAudio(Context& context);
 
     std::shared_ptr<Context> m_context;
 };

@@ -81,6 +81,10 @@ void Window::buildUI()
     gridLayout->addWidget(m_resetButton, m_bidirButtons.size(), 1, 1, 1);
     connect(m_resetButton, &QCheckBox::stateChanged, this, &Window::onResetChanged);
 
+    m_recordButton = new QCheckBox(this);
+    gridLayout->addWidget(m_recordButton, m_inputButtons.size() + 1, 0, 1, 1);
+    connect(m_recordButton, &QCheckBox::stateChanged, this, &Window::onRecordChanged);
+
     verticalLayout->addLayout(gridLayout);
 
     retranslateUI();
@@ -103,6 +107,7 @@ void Window::retranslateUI()
     }
     m_enableButton->setText("Enable");
     m_resetButton->setText("Reset (active low)");
+    m_recordButton->setText("Record");
 }
 
 void Window::onResetChanged(int state)
@@ -123,6 +128,18 @@ void Window::onInputChanged(std::size_t idx, int state)
 void Window::onBidirChanged(std::size_t idx, int state)
 {
     m_simulator->setValue(static_cast<Simulator::Input>(static_cast<unsigned int>(Simulator::Input::Bidir0) + idx), state == Qt::CheckState::Checked);
+}
+
+void Window::onRecordChanged(int state)
+{
+    if (state == Qt::CheckState::Checked)
+    {
+        m_simulator->startRecording();
+    }
+    else
+    {
+        m_simulator->stopRecording();
+    }
 }
 
 void Window::refreshMonitor()

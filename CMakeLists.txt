@@ -33,10 +33,17 @@ verilate(tt08-nyan
     SOURCES
     src/tt_um_nyan.v
     src/graphics.v
+    src/music.v
 )
 
 add_executable(bmp2verilog tools/bmp2verilog.cpp)
 target_compile_features(bmp2verilog PRIVATE cxx_std_20)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(bmp2verilog PRIVATE -Wall -W -Wextra -Wpedantic)
+endif()
+
+add_executable(make_music tools/make_music.cpp)
+target_compile_features(make_music PRIVATE cxx_std_20)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(make_music PRIVATE -Wall -W -Wextra -Wpedantic)
 endif()
