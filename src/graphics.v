@@ -44,7 +44,7 @@ module graphics
 
     assign vga_pmod = {hsync, blue[0], green[0], red[0], vsync, blue[1], green[1], red[1]};
  
-    `include "palette.v";
+    `include "palette.v"
     `include "frame0.v"
     `include "frame1.v"
 
