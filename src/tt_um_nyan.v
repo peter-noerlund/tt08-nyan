@@ -1,5 +1,3 @@
-// tt_um_vga_example
-
 `default_nettype none
 
 module tt_um_nyan
@@ -20,4 +18,6 @@ module tt_um_nyan
     assign uio_oe = 8'b00000000;
 
     graphics gfx(.clk(clk), .rst_n(rst_n), .vga_pmod(uo_out));
+    
+    // TODO - Audio
 endmodule
