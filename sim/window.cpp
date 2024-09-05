@@ -17,7 +17,7 @@ Window::Window(QWidget* parent)
 
     m_timer.setSingleShot(false);
     connect(&m_timer, &QTimer::timeout, this, &Window::refreshMonitor);
-    m_timer.start(std::chrono::milliseconds(25));
+    m_timer.start(std::chrono::milliseconds(17));
 }
 
 void Window::buildUI()
