@@ -30,14 +30,15 @@ void Window::buildUI()
     horizontalLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
     
     m_monitor = new Monitor(this);
+    m_monitor->setContentsMargins(0, 0, 0, 0);
 
     QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     sizePolicy.setHorizontalStretch(0);
     sizePolicy.setVerticalStretch(0);
     sizePolicy.setHeightForWidth(m_monitor->sizePolicy().hasHeightForWidth());
     m_monitor->setSizePolicy(sizePolicy);
-    m_monitor->setMinimumSize(QSize(640, 480));
-    m_monitor->setMaximumSize(QSize(640, 480));
+    m_monitor->setMinimumSize(QSize(800, 525));
+    m_monitor->setMaximumSize(QSize(800, 525));
 
     horizontalLayout->addWidget(m_monitor);
 

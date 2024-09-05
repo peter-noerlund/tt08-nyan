@@ -14,7 +14,7 @@ Monitor::Monitor(QWidget* parent)
 
 void Monitor::initializeGL()
 {
-    context()->functions()->glClearColor(0, 0, 0, 1);
+    context()->functions()->glClearColor(1, 0, 0, 1);
     QOpenGLWidget::initializeGL();
 }
 

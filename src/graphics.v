@@ -94,8 +94,10 @@ module graphics
                     palette[frame_counter[4] == 1'b0 ?
                     frame0[0][(pixel_y - NYAN_TOP) / NYAN_SCALE] :
                     frame1[0][(pixel_y - NYAN_TOP) / NYAN_SCALE]];
-            end else begin
+            end else if (pixel_x < VGA_WIDTH && pixel_y < VGA_HEIGHT) begin
                 {red, green, blue} <= 6'b000111;
+            end else begin
+                {red, green, blue} <= 6'b000000;
             end
         end
     end
