@@ -10,6 +10,7 @@ project:
   source_files:
     - tt_um_nyan.v
     - graphics.v
+    - music.v
 
 pinout:
   ui[0]: ""
@@ -35,6 +36,6 @@ pinout:
   uio[4]: ""
   uio[5]: ""
   uio[6]: ""
-  uio[7]: ""
+  uio[7]: "PWM output"
 
 yaml_version: 6

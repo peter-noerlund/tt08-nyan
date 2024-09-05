@@ -166,7 +166,7 @@ void Simulator::updateAudio(Context& context)
         std::uint16_t bitsPerSample;
     };
     
-    auto input = context.top.uio_out & 1;
+    auto input = context.top.uio_out >> 7;
     if (input == 1)
     {
         ++context.pwm_high;
