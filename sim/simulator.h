@@ -3,8 +3,9 @@
 #include "Vtt_um_nyan.h"
 
 #include <atomic>
-#include <cstdint>
+#include <chrono>
 #include <condition_variable>
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <span>
@@ -81,6 +82,7 @@ private:
         unsigned int row = 0;
         unsigned int column = 0;
         Monitor* monitor = nullptr;
+        std::chrono::high_resolution_clock::time_point lastFrame = {};
 
         std::array<std::uint8_t, 64> filler1;
 

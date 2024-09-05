@@ -2,6 +2,7 @@
 
 #include "monitor.h"
 
+#include <chrono>
 #include <thread>
 
 namespace tt08
@@ -60,6 +61,12 @@ bool Simulator::step(Context& context)
     if (context.stopPending.load(std::memory_order_acquire))
     {
         return false;
+    }
+
+    auto now = std::chrono::high_resolution_clock::now();
+    if (std::chrono::duration_cast<std::chrono::nanoseconds>(now - context.lastFrame).count() < 40)
+    {
+        std::this_thread::sleep_until(context.lastFrame + std::chrono::nanoseconds(40));
     }
 
     auto inputs = context.nextInputs.load(std::memory_order_acquire);
