@@ -32,49 +32,6 @@ struct BitmapInfoHeader
     std::uint32_t colorsImportant;
 };
 
-static void analyze(std::span<const std::uint8_t> pixels, unsigned int width, unsigned int height, unsigned int widthInBytes)
-{
-    std::vector<std::uint8_t> pmodPixels;
-    pmodPixels.resize(width * height);
-
-    for (unsigned int y = 0; y != height; ++y)
-    {
-        for (unsigned int x = 0; x != width; ++x)
-        {
-            auto red = pixels[(height - y - 1) * widthInBytes + x * 3] / 85;
-            auto green = pixels[(height - y - 1) * widthInBytes + x * 3 + 1] / 85;
-            auto blue = pixels[(height - y - 1) * widthInBytes + x * 3 + 1] / 85;
-
-            pmodPixels.at(y * width + x) = (red << 4) | (green << 2) | blue;
-        }
-    }
-
-    constexpr unsigned int strideX = 1;
-    constexpr unsigned int strideY = 1;
-
-    std::map<std::array<std::uint8_t, strideX * strideY>, unsigned int> mapping;
-    for (unsigned int y = 0; y < height; y += strideY)
-    {
-        for (unsigned int x = 0; x < width; x += strideX)
-        {
-            std::array<std::uint8_t, strideX * strideY> values;
-            for (unsigned int j = 0; j != strideY; ++j)
-            {
-                for (unsigned int i = 0; i != strideX; ++i)
-                {
-                    values[j * strideX + i] = pmodPixels.at((y + j) * width + x + i);
-                }
-            }
-            auto res = mapping.insert({values, 1});
-            if (!res.second)
-            {
-                res.first->second++;
-            }
-        }
-    }
-
-}
-
 static constexpr std::uint8_t rgb222(std::uint8_t r, std::uint8_t g, std::uint8_t b) noexcept
 {
     return (r << 4) | (g << 2) | b;
