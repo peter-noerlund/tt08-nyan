@@ -1,5 +1,6 @@
 `default_nettype none
 
+/* verilator lint_off WIDTHEXPAND */
 /* verilator lint_off WIDTHTRUNC */
 module music
     (
@@ -20,6 +21,7 @@ module music
     localparam SHORT_SAMPLES = TICK_WIDTH * 3;                                  // Short note gets one beat minus a space
     localparam LONG_SAMPLES = TICK_WIDTH * 7;                                   // Long note gets two beats minus a space
     localparam SPACE_SAMPLES = TICK_WIDTH;                                      // Space between notes
+    localparam NOTE_BITS = $clog2(LONG_SAMPLES);
 
     localparam G_SHARP = 3'd0;
     localparam F_SHARP = 3'd1;
@@ -34,9 +36,9 @@ module music
     reg [6:0] increments [5:0];
     reg [3:0] melody [24:0];
     reg [EXTENDED_SAMPLE_BITS - 1 : 0] extended_sample;
-    integer melody_pos;
-    integer pwm_pos;
-    integer note_pos;
+    reg [4:0] melody_pos;
+    reg [EXTENDED_SAMPLE_BITS - 1 : 0] pwm_pos;
+    reg [NOTE_BITS - 1 : 0] note_pos;
     reg do_note;
 
     wire [2:0] note;
@@ -93,8 +95,6 @@ module music
             if (pwm_pos == SAMPLE_SIZE) begin
                 pwm_pos <= 0;
 
-                //$display("pwm_pos=%d, note_pos=%d", pwm_pos, note_pos);
-
                 if (do_note && note_length == SHORT_NOTE && note_pos == SHORT_SAMPLES) begin
                     do_note <= 1'b0;
                     note_pos <= 0;
@@ -115,7 +115,7 @@ module music
                 end
 
                 if (do_note) begin
-                    extended_sample <= extended_sample + {8'b00000000, increments[note]};
+                    extended_sample <= extended_sample + increments[note];
                 end
                 
             end else begin
