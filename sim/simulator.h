@@ -10,8 +10,6 @@
 #include <span>
 #include <vector>
 
-class Vtt_um_minesweeper;
-
 namespace tt08
 {
 
