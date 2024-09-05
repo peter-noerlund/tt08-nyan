@@ -2,7 +2,6 @@
 
 #include <QOpenGLWidget>
 
-#include <cassert>
 #include <cstdint>
 #include <vector>
 
@@ -20,15 +19,13 @@ public:
     {
         if (x < m_width && y < m_width)
         {
-            m_pixels[(m_height - y) * m_width + x] = 
+            m_pixels[(m_height - y - 1) * m_width + x] = 
                 (static_cast<std::uint16_t>(red & 0xF0) << 8) |
                 (static_cast<std::uint16_t>(green & 0xF0) << 4) |
                 (blue & 0xF0) |
                 0x0F;
         }
     }
-
-    void redraw();
 
 protected:
     void initializeGL() override;

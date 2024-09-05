@@ -2,7 +2,6 @@
 
 #include "monitor.h"
 
-#include <iostream>
 #include <thread>
 
 namespace tt08

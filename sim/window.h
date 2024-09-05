@@ -5,12 +5,10 @@
 #include "monitor.h"
 
 #include <QWidget>
-#include <QLabel>
 #include <QCheckBox>
 #include <QTimer>
 
 #include <array>
-#include <memory>
 
 namespace tt08
 {
@@ -39,8 +37,8 @@ private:
     QCheckBox* m_enableButton = nullptr;
     QCheckBox* m_resetButton = nullptr;
 
-    std::unique_ptr<Simulator> m_simulator;
     QTimer m_timer;
+    std::unique_ptr<Simulator> m_simulator;
 };
 
 } // namespace tt08

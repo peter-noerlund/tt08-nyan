@@ -1,16 +1,11 @@
 #include "window.h"
 
-#include <iostream>
-#include <fstream>
-
-#include <QVBoxLayout>
+#include <QCheckBox>
+#include <QGridLayout>
 #include <QHBoxLayout>
-#include <QSpacerItem>
 #include <QSizePolicy>
-#include <QGraphicsView>
-#include <QPixmap>
-
-#include <cstddef>
+#include <QSpacerItem>
+#include <QVBoxLayout>
 
 namespace tt08
 {
