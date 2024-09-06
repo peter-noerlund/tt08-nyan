@@ -91,6 +91,7 @@ module music
             pwm_pos <= 0;
             do_note <= 1'b1;
             note_pos <= 0;
+            extended_sample <= {EXTENDED_SAMPLE_BITS{1'b0}};
         end else begin
             if (pwm_pos == SAMPLE_SIZE) begin
                 pwm_pos <= 0;
