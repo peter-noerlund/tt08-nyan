@@ -4,7 +4,7 @@ project:
   discord:      pchri03.
   description:  Nyan Cat
   language:     Verilog
-  clock_hz:     25175000
+  clock_hz:     25000000
   tiles:        1x1
   top_module:   tt_um_nyan
   source_files:
