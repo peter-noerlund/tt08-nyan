@@ -24,6 +24,7 @@ private Q_SLOTS:
     void onResetChanged(int state);
     void onEnableChanged(int state);
     void refreshMonitor();
+    void onRecordChanged(int state);
 
 private:
     void buildUI();
@@ -36,6 +37,7 @@ private:
     std::array<QCheckBox*, 8> m_bidirButtons = {};
     QCheckBox* m_enableButton = nullptr;
     QCheckBox* m_resetButton = nullptr;
+    QCheckBox* m_recordButton = nullptr;
 
     QTimer m_timer;
     std::unique_ptr<Simulator> m_simulator;

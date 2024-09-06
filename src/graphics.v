@@ -23,7 +23,8 @@ module graphics
     localparam X_PIXEL_BITS = $clog2(VGA_WIDTH + H_FRONT_PORCH + H_SYNC_PULSE + H_BACK_PORCH);
     localparam Y_PIXEL_BITS = $clog2(VGA_HEIGHT + V_FRONT_PORCH + V_SYNC_PULSE + V_BACK_PORCH);
 
-    localparam NYAN_SCALE = 8;
+    localparam NYAN_SCALE_BITS = 3;
+    localparam NYAN_SCALE = 2 ** NYAN_SCALE_BITS;
     localparam NYAN_WIDTH = 34 * NYAN_SCALE;
     localparam NYAN_HEIGHT = 22 * NYAN_SCALE;
     localparam NYAN_TOP = 128;
@@ -42,7 +43,15 @@ module graphics
 
     reg [4:0] frame_counter;
 
+    wire [5:0] bitmap_x;
+    wire [4:0] bitmap_y;
+
     assign vga_pmod = {hsync, blue[0], green[0], red[0], vsync, blue[1], green[1], red[1]};
+
+    /* verilator lint_off WIDTHTRUNC */
+    assign bitmap_x = (pixel_x - NYAN_LEFT) >> NYAN_SCALE_BITS;
+    assign bitmap_y = (pixel_y - NYAN_TOP) >> NYAN_SCALE_BITS;
+    /* verilator lint_on WIDTHTRUNC */
  
     `include "palette.v"
     `include "frame0.v"
@@ -81,19 +90,19 @@ module graphics
 
             if (pixel_x >= NYAN_LEFT && pixel_x < NYAN_RIGHT && pixel_y >= NYAN_TOP && pixel_y < NYAN_BOTTOM) begin
                 {red, green, blue} <=
-                    palette[frame_counter[4] == 1'b0 ?
-                    frame0[(pixel_x - NYAN_LEFT) / NYAN_SCALE][(pixel_y - NYAN_TOP) / NYAN_SCALE] :
-                    frame1[(pixel_x - NYAN_LEFT) / NYAN_SCALE][(pixel_y - NYAN_TOP) / NYAN_SCALE]];
+                    palette
+                        [
+                            frame_counter[4] == 1'b0 ?
+                            frame0[bitmap_x[5:1]][bitmap_y] :
+                            frame1[bitmap_x[5:1]][bitmap_y]
+                        ]
+                        [bitmap_x[0]];
             end else if (pixel_x >= 64 && pixel_x < NYAN_LEFT && pixel_y >= NYAN_TOP && pixel_y < NYAN_BOTTOM) begin
                 {red, green, blue} <=
-                    palette[frame_counter[4] == 1'b1 ?
-                    frame0[0][(pixel_y - NYAN_TOP) / NYAN_SCALE] :
-                    frame1[0][(pixel_y - NYAN_TOP) / NYAN_SCALE]];
+                    palette[frame_counter[4] == 1'b1 ? frame0[0][bitmap_y] : frame1[0][bitmap_y]][0];
             end else if (pixel_x < 64 && pixel_y >= NYAN_TOP && pixel_y < NYAN_BOTTOM) begin
                 {red, green, blue} <=
-                    palette[frame_counter[4] == 1'b0 ?
-                    frame0[0][(pixel_y - NYAN_TOP) / NYAN_SCALE] :
-                    frame1[0][(pixel_y - NYAN_TOP) / NYAN_SCALE]];
+                    palette[frame_counter[4] == 1'b0 ? frame0[0][bitmap_y] : frame1[0][bitmap_y]][0];
             end else if (pixel_x < VGA_WIDTH && pixel_y < VGA_HEIGHT) begin
                 {red, green, blue} <= 6'b000111;
             end else begin
