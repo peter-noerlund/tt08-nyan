@@ -42,4 +42,4 @@ async def test_project(dut):
     assert dut.uo_out[7].value == 1
     assert dut.uo_out[3].value == 1
 
-    await ClockCycles(dut.clk, 100000)
+    await ClockCycles(dut.clk, 420000)
