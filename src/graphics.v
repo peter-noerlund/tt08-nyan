@@ -61,14 +61,13 @@ module graphics
         if (!rst_n) begin
             hsync <= 1'b1;
             vsync <= 1'b1;
-`ifdef COCOTB_SIM
+
             red <= 2'd0;
             green <= 2'd0;
             blue <= 2'd0;
-            pixel_x <= 5'd0;
-            pixel_y <= 5'd0;
+            pixel_x <= {X_PIXEL_BITS{1'b0}};
+            pixel_y <= {Y_PIXEL_BITS{1'b0}};
             frame_counter <= 5'd0;
-`endif
         end else begin
             if (pixel_x == VGA_WIDTH + H_FRONT_PORCH) begin
                 hsync <= 1'b0;
