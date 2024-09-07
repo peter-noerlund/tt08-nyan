@@ -8,6 +8,106 @@ from cocotb.triggers import RisingEdge
 from cocotb.triggers import FallingEdge
 
 
+def get_vsync(pmod):
+    return (pmod.value.integer & 0x08 == 0x08)
+
+
+def get_hsync(pmod):
+    return (pmod.value.integer & 0x80 == 0x80)
+
+async def test_vga(dut):
+
+    h_pixels = 640
+    h_front_porch = 16
+    h_sync_pulse = 96
+    h_back_porch = 48
+    h_frame = h_pixels + h_front_porch + h_sync_pulse + h_back_porch
+
+    v_pixel = 480
+    v_front_porch = 10
+    v_sync_pulse = 2
+    v_back_porch = 33
+    v_frame = v_pixel + v_front_porch + v_sync_pulse + v_back_porch
+
+    dut._log.info("[VGA] Wait for horizontal sync")
+
+    hsync = get_hsync(dut.uo_out)
+    assert hsync
+
+    for clk in range(0, h_back_porch + h_pixels + h_front_porch):
+        await ClockCycles(dut.clk, 1)
+        hsync = get_hsync(dut.uo_out)
+        if not hsync:
+            break
+    assert not hsync
+
+    dut._log.info("[VGA] Verify horizontal sync pulse length")
+
+    for clk in range(0, h_sync_pulse):
+        await ClockCycles(dut.clk, 1)
+        hsync = get_hsync(dut.uo_out)
+        if hsync:
+            break
+    assert hsync
+    assert clk == h_sync_pulse - 1
+
+    dut._log.info("[VGA] Verify horizontal timing")
+
+    for clk in range(0, h_back_porch + h_pixels + h_front_porch):
+        await ClockCycles(dut.clk, 1)
+        hsync = get_hsync(dut.uo_out)
+        if not hsync:
+            break
+
+    assert not hsync
+    assert clk == h_back_porch + h_pixels + h_front_porch - 1
+
+    dut._log.info("[VGA] Wait for vertical sync")
+    
+    vsync = get_vsync(dut.uo_out)
+    assert vsync
+
+    for clk in range(0, h_frame * v_frame):
+        await ClockCycles(dut.clk, 1)
+        vsync = get_vsync(dut.uo_out)
+        if not vsync:
+            break
+    assert not vsync
+
+    dut._log.info("[VGA] Verify vertical sync pulse length")
+    for clk in range(0, h_frame * v_sync_pulse):
+        await ClockCycles(dut.clk, 1)
+        vsync = get_vsync(dut.uo_out)
+        if vsync:
+            break
+    assert vsync
+    assert clk == h_frame * v_sync_pulse - 1
+
+    dut._log.info("[VGA] Verify line count")
+
+    hsync = get_hsync(dut.uo_out)
+    assert hsync
+
+    lines = 0
+    for clk in range(0, h_frame * (v_back_porch + v_pixel + v_front_porch)):
+        old_hsync = hsync
+        await ClockCycles(dut.clk, 1)
+        hsync = get_hsync(dut.uo_out)
+
+        if old_hsync and not hsync:
+            lines = lines + 1
+
+        vsync = get_vsync(dut.uo_out)
+        if not vsync:
+            break
+
+    assert lines == v_back_porch + v_pixel + v_front_porch
+    assert not vsync
+    assert clk == h_frame * (v_back_porch + v_pixel + v_front_porch) - 1
+
+
+
+
 @cocotb.test()
 async def test_project(dut):
     dut._log.info("Start")
@@ -39,7 +139,5 @@ async def test_project(dut):
     await ClockCycles(dut.clk, 2)
 
     assert dut.uio_oe.value == 0x80
-    assert dut.uo_out[7].value == 1
-    assert dut.uo_out[3].value == 1
 
-    await ClockCycles(dut.clk, 420000)
+    await test_vga(dut)
