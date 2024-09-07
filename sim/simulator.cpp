@@ -118,6 +118,13 @@ void Simulator::updateMonitor(Context& context)
         auto blue = (((pmod & 0x04) >> 1) | ((pmod & 0x40) >> 6)) * 85;
 
         context.monitor->setPixel(x, y, red, green, blue);
+
+        if (context.recording.load(std::memory_order_acquire) && !context.image.empty())
+        {
+            context.image[(s_height - y - 1) * s_width * 3 + x * 3] = blue;
+            context.image[(s_height - y - 1) * s_width * 3 + x * 3 + 1] = green;
+            context.image[(s_height - y - 1) * s_width * 3 + x * 3 + 2] = red;
+        }
     }
 
     if (!hsync)
@@ -132,10 +139,81 @@ void Simulator::updateMonitor(Context& context)
     if (context.oldVsync && !vsync)
     {
         context.row = 0;
+        if (context.recording.load(std::memory_order_acquire))
+        {
+            if (context.image.empty())
+            {
+                context.image.resize(s_width * s_height * 3);
+            }
+            else
+            {
+                saveBitmap(context);
+            }
+        }
     }
 
     context.oldHsync = hsync;
     context.oldVsync = vsync;
+}
+
+void Simulator::saveBitmap(Context& context)
+{
+    struct BitmapFileHeader
+    {
+        std::uint32_t size;
+        std::uint32_t reserved;
+        std::uint32_t bitsOffset;
+    };
+
+    struct BitmapInfoHeader
+    {
+        std::uint32_t size;
+        std::int32_t width;
+        std::int32_t height;
+        std::uint16_t planes;
+        std::uint16_t bitCount;
+        std::uint32_t compression;
+        std::uint32_t imageSize;
+        std::int32_t xPelsPerMeter;
+        std::int32_t yPelsPerMeter;
+        std::uint32_t colorUsed;
+        std::uint32_t colorsImportant;
+    };
+
+    std::string filename = "frame";
+    filename += std::to_string(context.frameCounter++) + ".bmp";
+
+    std::ofstream file;
+    file.open(filename.c_str(), std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
+    if (!file.good())
+    {
+        return;
+    }
+
+    std::array<char, 2> signature = {'B', 'M'};
+    file.write(signature.data(), signature.size());
+
+    BitmapFileHeader fileHeader;
+    fileHeader.size = 2 + sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader) + context.image.size();
+    fileHeader.reserved = 0;
+    fileHeader.bitsOffset = 2 + sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader);
+    file.write(reinterpret_cast<const char*>(&fileHeader), sizeof(fileHeader));
+
+    BitmapInfoHeader infoHeader;
+    infoHeader.size = sizeof(infoHeader);
+    infoHeader.width = s_width;
+    infoHeader.height = s_height;
+    infoHeader.planes = 1;
+    infoHeader.bitCount = 24;
+    infoHeader.compression = 0;
+    infoHeader.imageSize = 0;
+    infoHeader.xPelsPerMeter = 2835;
+    infoHeader.yPelsPerMeter = 2835;
+    infoHeader.colorUsed = 0;
+    infoHeader.colorsImportant = 0;
+    file.write(reinterpret_cast<const char*>(&infoHeader), sizeof(infoHeader));
+
+    file.write(reinterpret_cast<const char*>(context.image.data()), context.image.size());
 }
 
 void Simulator::updateAudio(Context& context)

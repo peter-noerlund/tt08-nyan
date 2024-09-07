@@ -88,6 +88,8 @@ private:
         unsigned int row = 0;
         unsigned int column = 0;
         Monitor* monitor = nullptr;
+        std::vector<std::uint8_t> image;
+        unsigned int frameCounter = 0;
 
         // Audio stuff
         unsigned int pwm_pos = 0;
@@ -111,6 +113,7 @@ private:
     static bool step(Context& context);
     static void finish(Context& context);
     static void updateMonitor(Context& context);
+    static void saveBitmap(Context& context);
     static void updateAudio(Context& context);
 
     std::shared_ptr<Context> m_context;
