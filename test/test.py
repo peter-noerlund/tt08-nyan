@@ -9,11 +9,11 @@ from cocotb.triggers import FallingEdge
 
 
 def get_vsync(pmod):
-    return (pmod.value.integer & 0x08 == 0x08)
+    return pmod[3].value
 
 
 def get_hsync(pmod):
-    return (pmod.value.integer & 0x80 == 0x80)
+    return pmod[7].value
 
 async def test_vga(dut):
 
