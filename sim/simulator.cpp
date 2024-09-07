@@ -105,8 +105,8 @@ void Simulator::updateMonitor(Context& context)
     bool hsync = (pmod & 0x80) != 0;
     bool vsync = (pmod & 0x08) != 0;
 
-    if (!hsync && context.column >= s_horizontalBackPorch && context.column < s_width + s_horizontalBackPorch &&
-        !vsync && context.row >= s_verticalBackPorch && context.row < s_height + s_verticalBackPorch)
+    if (hsync && context.column >= s_horizontalBackPorch && context.column < s_width + s_horizontalBackPorch &&
+        vsync && context.row >= s_verticalBackPorch && context.row < s_height + s_verticalBackPorch)
     {
         // Encoding is RRRGGGBB
 
@@ -127,16 +127,16 @@ void Simulator::updateMonitor(Context& context)
         }
     }
 
-    if (!hsync)
+    if (hsync)
     {
         ++context.column;
     }
-    if (context.oldHsync && !hsync)
+    if (!context.oldHsync && hsync)
     {
         context.column = 0;
         ++context.row;
     }
-    if (context.oldVsync && !vsync)
+    if (!context.oldVsync && vsync)
     {
         context.row = 0;
         if (context.recording.load(std::memory_order_acquire))

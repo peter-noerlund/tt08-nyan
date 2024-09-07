@@ -71,17 +71,17 @@ module graphics
 `endif
         end else begin
             if (pixel_x == VGA_WIDTH + H_FRONT_PORCH) begin
-                hsync <= 1'b1;
+                hsync <= 1'b0;
             end
             if (pixel_x == VGA_WIDTH + H_FRONT_PORCH + H_SYNC_PULSE) begin
-                hsync <= 1'b0;
+                hsync <= 1'b1;
             end
 
             if (pixel_y == VGA_HEIGHT + V_FRONT_PORCH) begin
-                vsync <= 1'b1;
+                vsync <= 1'b0;
             end
             if (pixel_y == VGA_HEIGHT + V_FRONT_PORCH + V_SYNC_PULSE) begin
-                vsync <= 1'b0;
+                vsync <= 1'b1;
             end
 
             if (pixel_x >= VGA_WIDTH + H_BACK_PORCH + H_SYNC_PULSE + H_BACK_PORCH - 1) begin
