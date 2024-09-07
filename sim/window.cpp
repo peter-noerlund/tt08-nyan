@@ -37,8 +37,8 @@ void Window::buildUI()
     sizePolicy.setVerticalStretch(0);
     sizePolicy.setHeightForWidth(m_monitor->sizePolicy().hasHeightForWidth());
     m_monitor->setSizePolicy(sizePolicy);
-    m_monitor->setMinimumSize(QSize(800, 525));
-    m_monitor->setMaximumSize(QSize(800, 525));
+    m_monitor->setMinimumSize(QSize(640, 480));
+    m_monitor->setMaximumSize(QSize(640, 480));
 
     horizontalLayout->addWidget(m_monitor);
 
