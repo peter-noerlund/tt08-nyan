@@ -84,7 +84,7 @@ module graphics
                 vsync <= 1'b1;
             end
 
-            if (pixel_x >= VGA_WIDTH + H_BACK_PORCH + H_SYNC_PULSE + H_BACK_PORCH - 1) begin
+            if (pixel_x >= VGA_WIDTH + H_FRONT_PORCH + H_SYNC_PULSE + H_BACK_PORCH - 1) begin
                 pixel_x <= {X_PIXEL_BITS{1'b0}};
                 if (pixel_y >= VGA_HEIGHT + V_FRONT_PORCH + V_SYNC_PULSE + V_BACK_PORCH - 1) begin
                     pixel_y <= {Y_PIXEL_BITS{1'b0}};
