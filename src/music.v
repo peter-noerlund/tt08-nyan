@@ -12,7 +12,7 @@ module music
     localparam SAMPLE_RATE = 200000;                                            // 200kHz PWM rate
     localparam SAMPLE_BITS = $clog2(INPUT_FREQUENCY / SAMPLE_RATE);             // Number of bits needed for ideal sample size ($clog2(125) = 7 bits)
     localparam SAMPLE_SIZE = 2**SAMPLE_BITS;                                    // Binary sample size (128)
-    localparam EXTRA_SAMPLE_BITS = 8;                                           // Additional precision in bits
+    localparam EXTRA_SAMPLE_BITS = 6;                                           // Additional precision in bits
     localparam EXTENDED_SAMPLE_BITS = SAMPLE_BITS + EXTRA_SAMPLE_BITS;          // Total number of sample bits (15 bits)
     localparam EXTENDED_SAMPLE_RANGE = SAMPLE_SIZE * (2 ** EXTRA_SAMPLE_BITS);  // Sample range which is also our internal resolution (32768)
     localparam TICK_WIDTH = 28 * SAMPLE_RATE / 256 / 4;                         // The full Nyan Cat loop is approx. 28 seconds and contains 256 beats, which we divide in 4
