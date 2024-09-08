@@ -37,7 +37,7 @@ module music
     reg [3:0] melody [24:0];
     reg [EXTENDED_SAMPLE_BITS - 1 : 0] extended_sample;
     reg [4:0] melody_pos;
-    reg [EXTENDED_SAMPLE_BITS - 1 : 0] pwm_pos;
+    reg [SAMPLE_BITS - 1 : 0] pwm_pos;
     reg [NOTE_BITS - 1 : 0] note_pos;
     reg do_note;
 
@@ -48,7 +48,7 @@ module music
     assign note = melody[melody_pos][3:1];
     assign note_length = melody[melody_pos][0];
     assign sample = extended_sample[EXTENDED_SAMPLE_BITS - 1 -: SAMPLE_BITS];
-    assign pwm = (pwm_pos <= sample ? 1'b1 : 1'b0);
+    assign pwm = (do_note && pwm_pos <= sample ? 1'b1 : 1'b0);
 
     initial begin
         increments[G_SHARP] = EXTENDED_SAMPLE_RANGE * 415 / SAMPLE_RATE;    // 67
@@ -94,9 +94,7 @@ module music
 
             extended_sample <= {EXTENDED_SAMPLE_BITS{1'b0}};
         end else begin
-            if (pwm_pos == SAMPLE_SIZE) begin
-                pwm_pos <= 0;
-
+            if (pwm_pos == SAMPLE_SIZE - 1) begin
                 if (do_note && note_length == SHORT_NOTE && note_pos == SHORT_SAMPLES) begin
                     do_note <= 1'b0;
                     note_pos <= 0;
@@ -119,10 +117,9 @@ module music
                 if (do_note) begin
                     extended_sample <= extended_sample + increments[note];
                 end
-                
-            end else begin
-                pwm_pos <= pwm_pos + 1;
             end
+
+            pwm_pos <= pwm_pos + 1;
         end
     end
 endmodule
