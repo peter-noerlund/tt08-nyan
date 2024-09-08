@@ -51,6 +51,7 @@ module music
     initial begin
         increments[G_SHARP] = 7'(EXTENDED_SAMPLE_RANGE * 415 / SAMPLE_RATE);
         increments[F_SHARP] = 7'(EXTENDED_SAMPLE_RANGE * 370 / SAMPLE_RATE);
+        increments[D_SHARP] = 7'(EXTENDED_SAMPLE_RANGE * 311 / SAMPLE_RATE);
         increments[D]       = 7'(EXTENDED_SAMPLE_RANGE * 294 / SAMPLE_RATE);
         increments[C_SHARP] = 7'(EXTENDED_SAMPLE_RANGE * 277 / SAMPLE_RATE);
         increments[B]       = 7'(EXTENDED_SAMPLE_RANGE * 247 / SAMPLE_RATE);
