@@ -169,7 +169,7 @@ public:
             throw std::runtime_error("Got more than 32 pixel pairs");
         }
 
-        auto filename = outputDir / "palette.v";
+        auto filename = outputDir / "palette.vh";
 
         std::ofstream file;
         file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
@@ -196,7 +196,7 @@ public:
 
     void writeBitmap(const Bitmap& bitmap, const std::filesystem::path& outputDir)
     {
-        auto filename = outputDir / bitmap.filename().filename().replace_extension("v");
+        auto filename = outputDir / bitmap.filename().filename().replace_extension("vh");
 
         std::ofstream file;
         file.exceptions(std::ofstream::failbit | std::ofstream::badbit);

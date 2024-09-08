@@ -53,9 +53,9 @@ module graphics
     assign bitmap_y = (pixel_y - NYAN_TOP) >> NYAN_SCALE_BITS;
     /* verilator lint_on WIDTHTRUNC */
  
-    `include "palette.v"
-    `include "frame0.v"
-    `include "frame1.v"
+    `include "palette.vh"
+    `include "frame0.vh"
+    `include "frame1.vh"
 
     always @ (posedge clk) begin
         if (!rst_n) begin
