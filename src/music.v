@@ -1,7 +1,5 @@
 `default_nettype none
 
-/* verilator lint_off WIDTHEXPAND */
-/* verilator lint_off WIDTHTRUNC */
 module music
     (
         input wire clk,
@@ -51,12 +49,11 @@ module music
     assign pwm = (do_note && pwm_pos <= sample ? 1'b1 : 1'b0);
 
     initial begin
-        increments[G_SHARP] = EXTENDED_SAMPLE_RANGE * 415 / SAMPLE_RATE;    // 67
-        increments[F_SHARP] = EXTENDED_SAMPLE_RANGE * 370 / SAMPLE_RATE;    // 60
-        increments[D_SHARP] = EXTENDED_SAMPLE_RANGE * 311 / SAMPLE_RATE;    // 50
-        increments[D]       = EXTENDED_SAMPLE_RANGE * 294 / SAMPLE_RATE;    // 48
-        increments[C_SHARP] = EXTENDED_SAMPLE_RANGE * 277 / SAMPLE_RATE;    // 45
-        increments[B]       = EXTENDED_SAMPLE_RANGE * 247 / SAMPLE_RATE;    // 40
+        increments[G_SHARP] = 7'(EXTENDED_SAMPLE_RANGE * 415 / SAMPLE_RATE);
+        increments[F_SHARP] = 7'(EXTENDED_SAMPLE_RANGE * 370 / SAMPLE_RATE);
+        increments[D]       = 7'(EXTENDED_SAMPLE_RANGE * 294 / SAMPLE_RATE);
+        increments[C_SHARP] = 7'(EXTENDED_SAMPLE_RANGE * 277 / SAMPLE_RATE);
+        increments[B]       = 7'(EXTENDED_SAMPLE_RANGE * 247 / SAMPLE_RATE);
 
         melody[0] = {F_SHARP, LONG_NOTE};
         melody[1] = {G_SHARP, LONG_NOTE};
@@ -95,13 +92,13 @@ module music
             extended_sample <= {EXTENDED_SAMPLE_BITS{1'b0}};
         end else begin
             if (pwm_pos == SAMPLE_SIZE - 1) begin
-                if (do_note && note_length == SHORT_NOTE && note_pos == SHORT_SAMPLES) begin
+                if (do_note && note_length == SHORT_NOTE && note_pos == NOTE_BITS'(SHORT_SAMPLES)) begin
                     do_note <= 1'b0;
                     note_pos <= 0;
-                end else if (do_note && note_length == LONG_NOTE && note_pos == LONG_SAMPLES) begin
+                end else if (do_note && note_length == LONG_NOTE && note_pos == NOTE_BITS'(LONG_SAMPLES)) begin
                     do_note <= 1'b0;
                     note_pos <= 0;
-                end else if (!do_note && note_pos == SPACE_SAMPLES) begin
+                end else if (!do_note && note_pos == NOTE_BITS'(SPACE_SAMPLES)) begin
                     do_note <= 1'b1;
                     note_pos <= 0;
 
@@ -115,7 +112,7 @@ module music
                 end
 
                 if (do_note) begin
-                    extended_sample <= extended_sample + increments[note];
+                    extended_sample <= extended_sample + EXTENDED_SAMPLE_BITS'(increments[note]);
                 end
             end
 
