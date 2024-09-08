@@ -8,15 +8,59 @@ from cocotb.triggers import RisingEdge
 from cocotb.triggers import FallingEdge
 
 
-def get_vsync(pmod):
-    return pmod[3].value
+def get_vsync(dut):
+    return dut.uo_out[3].value
 
 
-def get_hsync(pmod):
-    return pmod[7].value
+def get_hsync(dut):
+    return dut.uo_out[7].value
+
+
+def get_pwm(dut):
+    return dut.uio_out[7].value
+
+
+async def get_sample(dut):
+    value = 0
+    for clk in range(0, 128):
+        value += get_pwm(dut)
+        await ClockCycles(dut.clk, 1)
+    return value
+
+
+async def test_audio(dut):
+    dut._log.info("[Audio] Verify I/O")
+
+    assert dut.uio_oe[7]
+
+    dut._log.info("[Audio] Wait for next sample")
+
+    value = get_pwm(dut)
+    assert value
+
+    for clk in range(0, 128):
+        await ClockCycles(dut.clk, 1)
+        value = get_pwm(dut)
+        if not value:
+            break
+
+    for clk in range(0, 128):
+        await ClockCycles(dut.clk, 1)
+        value = get_pwm(dut)
+        if value:
+            break
+
+    assert value
+
+    dut._log.info("[Audio] Verify first 16 samples")
+
+    for i in range(1, 5):
+        for j in range(0, 4):
+            value = await get_sample(dut)
+            assert value == i
+
 
 async def test_vga(dut):
-
     h_pixels = 640
     h_front_porch = 16
     h_sync_pulse = 96
@@ -29,75 +73,75 @@ async def test_vga(dut):
     v_back_porch = 33
     v_frame = v_pixel + v_front_porch + v_sync_pulse + v_back_porch
 
-    dut._log.info("[VGA] Wait for horizontal sync")
+    dut._log.info("[Video] Wait for horizontal sync")
 
-    hsync = get_hsync(dut.uo_out)
+    hsync = get_hsync(dut)
     assert hsync
 
     for clk in range(0, h_back_porch + h_pixels + h_front_porch):
         await ClockCycles(dut.clk, 1)
-        hsync = get_hsync(dut.uo_out)
+        hsync = get_hsync(dut)
         if not hsync:
             break
     assert not hsync
 
-    dut._log.info("[VGA] Verify horizontal sync pulse length")
+    dut._log.info("[Video] Verify horizontal sync pulse length")
 
     for clk in range(0, h_sync_pulse):
         await ClockCycles(dut.clk, 1)
-        hsync = get_hsync(dut.uo_out)
+        hsync = get_hsync(dut)
         if hsync:
             break
     assert hsync
     assert clk == h_sync_pulse - 1
 
-    dut._log.info("[VGA] Verify horizontal timing")
+    dut._log.info("[Video] Verify horizontal timing")
 
     for clk in range(0, h_back_porch + h_pixels + h_front_porch):
         await ClockCycles(dut.clk, 1)
-        hsync = get_hsync(dut.uo_out)
+        hsync = get_hsync(dut)
         if not hsync:
             break
 
     assert not hsync
     assert clk == h_back_porch + h_pixels + h_front_porch - 1
 
-    dut._log.info("[VGA] Wait for vertical sync")
+    dut._log.info("[Video] Wait for vertical sync")
     
-    vsync = get_vsync(dut.uo_out)
+    vsync = get_vsync(dut)
     assert vsync
 
     for clk in range(0, h_frame * v_frame):
         await ClockCycles(dut.clk, 1)
-        vsync = get_vsync(dut.uo_out)
+        vsync = get_vsync(dut)
         if not vsync:
             break
     assert not vsync
 
-    dut._log.info("[VGA] Verify vertical sync pulse length")
+    dut._log.info("[Video] Verify vertical sync pulse length")
     for clk in range(0, h_frame * v_sync_pulse):
         await ClockCycles(dut.clk, 1)
-        vsync = get_vsync(dut.uo_out)
+        vsync = get_vsync(dut)
         if vsync:
             break
     assert vsync
     assert clk == h_frame * v_sync_pulse - 1
 
-    dut._log.info("[VGA] Verify line count")
+    dut._log.info("[Video] Verify line count")
 
-    hsync = get_hsync(dut.uo_out)
+    hsync = get_hsync(dut)
     assert hsync
 
     lines = 0
     for clk in range(0, h_frame * (v_back_porch + v_pixel + v_front_porch)):
         old_hsync = hsync
         await ClockCycles(dut.clk, 1)
-        hsync = get_hsync(dut.uo_out)
+        hsync = get_hsync(dut)
 
         if old_hsync and not hsync:
             lines = lines + 1
 
-        vsync = get_vsync(dut.uo_out)
+        vsync = get_vsync(dut)
         if not vsync:
             break
 
@@ -126,18 +170,7 @@ async def test_project(dut):
 
     dut._log.info("Test project behavior")
 
-    # uio_out[7] = Audio PWM
-    # uo_out[0] = R1
-    # uo_out[1] = G1
-    # uo_out[2] = B1
-    # uo_out[3] = VSync
-    # uo_out[4] = R0
-    # uo_out[5] = G0
-    # uo_out[6] = B0
-    # uo_out[7] = HSync
+    await ClockCycles(dut.clk, 1)
 
-    await ClockCycles(dut.clk, 2)
-
-    assert dut.uio_oe.value == 0x80
-
+    await test_audio(dut)
     await test_vga(dut)
