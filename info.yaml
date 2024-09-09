@@ -8,9 +8,9 @@ project:
   tiles:        1x1
   top_module:   tt_um_nyan
   source_files:
-    - tt_um_nyan.v
-    - graphics.v
-    - music.v
+    - tt_um_nyan.sv
+    - graphics.sv
+    - music.sv
 
 pinout:
   ui[0]: ""

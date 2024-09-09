@@ -51,9 +51,9 @@ module graphics
     assign bitmap_x = 6'((pixel_x - X_PIXEL_BITS'(NYAN_LEFT)) >> NYAN_SCALE_BITS);
     assign bitmap_y = 5'((pixel_y - Y_PIXEL_BITS'(NYAN_TOP)) >> NYAN_SCALE_BITS);
  
-    `include "palette.vh"
-    `include "frame0.vh"
-    `include "frame1.vh"
+    `include "palette.svh"
+    `include "frame0.svh"
+    `include "frame1.svh"
 
     always @ (posedge clk) begin
         if (!rst_n) begin

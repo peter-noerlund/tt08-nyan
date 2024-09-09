@@ -31,9 +31,9 @@ verilate(tt08-nyan
     OPT_FAST "-O3 -march=native"
     VERILATOR_ARGS -Wall -I${CMAKE_CURRENT_SOURCE_DIR}/src
     SOURCES
-    src/tt_um_nyan.v
-    src/graphics.v
-    src/music.v
+    src/tt_um_nyan.sv
+    src/graphics.sv
+    src/music.sv
 )
 
 add_executable(make_bitmaps tools/make_bitmaps.cpp)

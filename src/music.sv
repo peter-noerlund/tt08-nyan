@@ -69,7 +69,7 @@ module music
         increments[LOW_D_SHARP]     = 7'(EXTENDED_SAMPLE_RANGE * 156 / SAMPLE_RATE);
     end
 
-`include "melody.vh"
+`include "melody.svh"
 
     always @ (posedge clk) begin
         if (!rst_n) begin

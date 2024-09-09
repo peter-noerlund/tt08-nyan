@@ -169,7 +169,7 @@ public:
             throw std::runtime_error("Got more than 32 pixel pairs");
         }
 
-        auto filename = outputDir / "palette.vh";
+        auto filename = outputDir / "palette.svh";
 
         std::ofstream file;
         file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
