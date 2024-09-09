@@ -52,10 +52,10 @@ async def test_audio(dut):
 
     assert value
 
-    dut._log.info("[Audio] Verify first 16 samples")
+    dut._log.info("[Audio] Verify initial samples")
 
-    for i in range(1, 5):
-        for j in range(0, 4):
+    for i in range(1, 4):
+        for j in range(0, 6):
             value = await get_sample(dut)
             assert value == i
 
