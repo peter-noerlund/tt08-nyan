@@ -50,6 +50,7 @@ module graphics
     reg [PIXEL_Y_BITS - 1 : 0] pixel_y;
 
     reg [4:0] frame_counter;
+    reg render_y;
 
     wire [BITMAP_PIXEL_X_BITS - 1 : 0] bitmap_x;
     wire [BITMAP_PIXEL_Y_BITS - 1 : 0] bitmap_y;
@@ -74,6 +75,7 @@ module graphics
             pixel_x <= PIXEL_X_BITS'(0);
             pixel_y <= PIXEL_Y_BITS'(0);
             frame_counter <= 5'd0;
+            render_y <= 1'b0;
         end else begin
             if (pixel_x == H_PIXELS + H_FRONT_PORCH) begin
                 hsync <= 1'b0;
@@ -101,7 +103,15 @@ module graphics
                 pixel_x <= pixel_x + PIXEL_X_BITS'(1);
             end
 
-            if (pixel_x < SCALED_BITMAP_WIDTH && pixel_y >= SCALED_BITMAP_TOP && pixel_y < SCALED_BITMAP_BOTTOM) begin
+            if (pixel_y == SCALED_BITMAP_TOP - 1) begin
+                render_y <= 1'b1;
+            end
+
+            if (pixel_y == SCALED_BITMAP_BOTTOM - 1) begin
+                render_y <= 1'b0;
+            end
+
+            if (pixel_x < SCALED_BITMAP_WIDTH && render_y) begin
                 {red, green, blue} <= palette[
                     frame_counter[4] == 1'b0 ?
                     frame0[bitmap_x[BITMAP_PIXEL_X_BITS - 1 : 1]][bitmap_y] :
