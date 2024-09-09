@@ -31,10 +31,11 @@ module graphics
     localparam BITMAP_WIDTH = 64;
     localparam BITMAP_HEIGHT = 32;
     localparam BITMAP_TOP = 16;
+    localparam BITMAP_BOTTOM = BITMAP_TOP + BITMAP_HEIGHT;
 
     localparam SCALED_BITMAP_WIDTH = BITMAP_WIDTH * SCALE;
-    localparam SCALED_BITMAP_HEIGHT = (BITMAP_HEIGHT + BITMAP_TOP) * SCALE;
     localparam SCALED_BITMAP_TOP = BITMAP_TOP * SCALE;
+    localparam SCALED_BITMAP_BOTTOM = BITMAP_BOTTOM * SCALE;
 
     localparam BITMAP_PIXEL_X_BITS = $clog2(BITMAP_WIDTH);
     localparam BITMAP_PIXEL_Y_BITS = $clog2(BITMAP_HEIGHT);
@@ -88,9 +89,9 @@ module graphics
                 vsync <= 1'b1;
             end
 
-            if (pixel_x >= H_PIXELS + H_FRONT_PORCH + H_SYNC_PULSE + H_BACK_PORCH - 1) begin
+            if (pixel_x == H_PIXELS + H_FRONT_PORCH + H_SYNC_PULSE + H_BACK_PORCH - 1) begin
                 pixel_x <= PIXEL_X_BITS'(0);
-                if (pixel_y >= V_PIXELS + V_FRONT_PORCH + V_SYNC_PULSE + V_BACK_PORCH - 1) begin
+                if (pixel_y == V_PIXELS + V_FRONT_PORCH + V_SYNC_PULSE + V_BACK_PORCH - 1) begin
                     pixel_y <= PIXEL_Y_BITS'(0);
                     frame_counter <= frame_counter + 5'd1;
                 end else begin
@@ -100,7 +101,7 @@ module graphics
                 pixel_x <= pixel_x + PIXEL_X_BITS'(1);
             end
 
-            if (pixel_x < SCALED_BITMAP_WIDTH && pixel_y >= SCALED_BITMAP_TOP && pixel_y < SCALED_BITMAP_HEIGHT) begin
+            if (pixel_x < SCALED_BITMAP_WIDTH && pixel_y >= SCALED_BITMAP_TOP && pixel_y < SCALED_BITMAP_BOTTOM) begin
                 {red, green, blue} <= palette[
                     frame_counter[4] == 1'b0 ?
                     frame0[bitmap_x[BITMAP_PIXEL_X_BITS - 1 : 1]][bitmap_y] :
