@@ -26,11 +26,15 @@ module graphics
     localparam SCALE_BITS = 3;
     localparam SCALE = 2 ** SCALE_BITS;
 
+    localparam DOWNSCALED_PIXEL_Y_BITS = PIXEL_Y_BITS - SCALE_BITS;
+
     localparam BITMAP_WIDTH = 64;
-    localparam BITMAP_HEIGHT = 48;
+    localparam BITMAP_HEIGHT = 32;
+    localparam BITMAP_TOP = 16;
 
     localparam SCALED_BITMAP_WIDTH = BITMAP_WIDTH * SCALE;
-    localparam SCALED_BITMAP_HEIGHT = BITMAP_HEIGHT * SCALE;
+    localparam SCALED_BITMAP_HEIGHT = (BITMAP_HEIGHT + BITMAP_TOP) * SCALE;
+    localparam SCALED_BITMAP_TOP = BITMAP_TOP * SCALE;
 
     localparam BITMAP_PIXEL_X_BITS = $clog2(BITMAP_WIDTH);
     localparam BITMAP_PIXEL_Y_BITS = $clog2(BITMAP_HEIGHT);
@@ -52,7 +56,7 @@ module graphics
     assign vga_pmod = {hsync, blue[0], green[0], red[0], vsync, blue[1], green[1], red[1]};
 
     assign bitmap_x = pixel_x[BITMAP_PIXEL_X_BITS + SCALE_BITS - 1 : SCALE_BITS];
-    assign bitmap_y = pixel_y[BITMAP_PIXEL_Y_BITS + SCALE_BITS - 1 : SCALE_BITS];
+    assign bitmap_y = BITMAP_PIXEL_Y_BITS'(DOWNSCALED_PIXEL_Y_BITS'(pixel_y >> SCALE_BITS) - DOWNSCALED_PIXEL_Y_BITS'(BITMAP_TOP));
  
     `include "palette.svh"
     `include "frame0.svh"
@@ -96,7 +100,7 @@ module graphics
                 pixel_x <= pixel_x + PIXEL_X_BITS'(1);
             end
 
-            if (pixel_x < SCALED_BITMAP_WIDTH && pixel_y < SCALED_BITMAP_HEIGHT) begin
+            if (pixel_x < SCALED_BITMAP_WIDTH && pixel_y >= SCALED_BITMAP_TOP && pixel_y < SCALED_BITMAP_HEIGHT) begin
                 {red, green, blue} <= palette[
                     frame_counter[4] == 1'b0 ?
                     frame0[bitmap_x[BITMAP_PIXEL_X_BITS - 1 : 1]][bitmap_y] :
