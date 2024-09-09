@@ -4,6 +4,7 @@ tt
 venv
 pdk
 runs
+src/_tt_fpga_top.v
 src/config_merged.json
 src/user_config.json
 test/sim_build
