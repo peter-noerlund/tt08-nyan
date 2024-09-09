@@ -120,9 +120,9 @@ module graphics
             if (render_x && render_y) begin
                 {red, green, blue} <= palette[
                     frame_counter[4] == 1'b0 ?
-                    frame0[bitmap_x[BITMAP_PIXEL_X_BITS - 1 : 1]][bitmap_y] :
-                    frame1[bitmap_x[BITMAP_PIXEL_X_BITS - 1 : 1]][bitmap_y]
-                ][bitmap_x[0]];
+                    frame0[bitmap_x[BITMAP_PIXEL_X_BITS - 1 : 2]][bitmap_y] :
+                    frame1[bitmap_x[BITMAP_PIXEL_X_BITS - 1 : 2]][bitmap_y]
+                ][bitmap_x[1:0]];
             end else begin
                 {red, green, blue} <= 6'b000111;
             end

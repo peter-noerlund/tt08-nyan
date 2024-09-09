@@ -140,7 +140,7 @@ private:
 class BitmapMaker
 {
 public:
-    using PixelPair = std::array<std::uint8_t, 2>;
+    using PixelSet = std::array<std::uint8_t, 4>;
 
     void analyze(const Bitmap& bitmap)
     {
@@ -151,11 +151,15 @@ public:
 
         for (unsigned int y = 0; y != bitmap.height(); ++y)
         {
-            for (unsigned int x = 0; x != bitmap.width(); x += 2)
+            PixelSet pixelSet;
+            for (unsigned int x = 0; x != bitmap.width(); x += pixelSet.size())
             {
-                PixelPair pixelPair{bitmap.pixel(x, y), bitmap.pixel(x + 1, y)};
+                for (std::size_t i = 0; i != pixelSet.size(); ++i)
+                {
+                    pixelSet[i] = bitmap.pixel(x + i, y);
+                }
 
-                auto res = m_pixelPairHistogram.insert({pixelPair, 1});
+                auto res = m_pixelSetHistogram.insert({pixelSet, 1});
                 if (!res.second)
                 {
                     res.first->second++;
@@ -166,21 +170,21 @@ public:
 
     void createPalette()
     {
-        if (m_pixelPairHistogram.size() > 32)
+        if (m_pixelSetHistogram.size() > 64)
         {
             throw std::runtime_error("Got more than 32 pixel pairs");
         }
 
-        std::vector<std::pair<PixelPair, unsigned int>> sortedPixelPairs;
-        sortedPixelPairs.assign(m_pixelPairHistogram.begin(), m_pixelPairHistogram.end());
-        std::sort(sortedPixelPairs.begin(), sortedPixelPairs.end(), [](const auto& lhs, const auto& rhs)
+        std::vector<std::pair<PixelSet, unsigned int>> sortedPixelSets;
+        sortedPixelSets.assign(m_pixelSetHistogram.begin(), m_pixelSetHistogram.end());
+        std::sort(sortedPixelSets.begin(), sortedPixelSets.end(), [](const auto& lhs, const auto& rhs)
         {
             return rhs.second < lhs.second;
         });
 
-        for (std::size_t i = 0; i != sortedPixelPairs.size(); ++i)
+        for (std::size_t i = 0; i != sortedPixelSets.size(); ++i)
         {
-            m_palette[sortedPixelPairs[i].first] = static_cast<std::uint8_t>(i);
+            m_palette[sortedPixelSets[i].first] = static_cast<std::uint8_t>(i);
         }
     }
 
@@ -192,23 +196,23 @@ public:
         file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
         file.open(filename.string(), std::ofstream::out | std::ofstream::trunc);
 
-        file << "reg [5:0] palette[" << (m_palette.size() - 1) << ":0][1:0];\n";
+        file << "reg [5:0] palette[" << (m_palette.size() - 1) << ":0][" << (m_palette.begin()->first.size() - 1) << ":0];\n";
         file << "initial begin\n";
 
-        std::vector<PixelPair> palette;
+        std::vector<PixelSet> palette;
         palette.resize(m_palette.size());
-        for (auto [pixelPair, encoding] : m_palette)
+        for (auto [pixelSet, encoding] : m_palette)
         {
-            palette.at(encoding) = pixelPair;
+            palette.at(encoding) = pixelSet;
         }
 
         static const std::array<std::string_view, 4> mapping({"00", "01", "10", "11"});
         for (std::size_t i = 0; i != palette.size(); ++i)
         {
-            auto pixelPair = palette[i];
-            for (std::size_t j = 0; j != pixelPair.size(); ++j)
+            auto pixelSet = palette[i];
+            for (std::size_t j = 0; j != pixelSet.size(); ++j)
             {
-                auto pixel = pixelPair[j];
+                auto pixel = pixelSet[j];
 
                 file << "    palette[" << i << "][" << j << "] = 6'b" << mapping.at(pixel >> 4) << mapping.at((pixel >> 2) & 0x03) << mapping.at(pixel & 0x03) << ";\n";
             }
@@ -227,16 +231,21 @@ public:
 
         auto name = bitmap.filename().filename().replace_extension("").string();
 
-        file << "reg [4:0] " << name << "[" << (bitmap.width() / 2 - 1) << ":0][" << (bitmap.height() - 1) << ":0];\n";
+        PixelSet pixelSet;
+
+        file << "reg [5:0] " << name << "[" << (bitmap.width() / pixelSet.size() - 1) << ":0][" << (bitmap.height() - 1) << ":0];\n";
         file << "initial begin\n";
 
         for (unsigned int y = 0; y != bitmap.height(); ++y)
         {
-            for (unsigned int x = 0; x != bitmap.width(); x += 2)
+            for (unsigned int x = 0; x != bitmap.width(); x += pixelSet.size())
             {
-                std::array<std::uint8_t, 2> pixelPair{bitmap.pixel(x, y), bitmap.pixel(x + 1, y)};
+                for (std::size_t j = 0; j != pixelSet.size(); ++j)
+                {
+                    pixelSet[j] = bitmap.pixel(x + j, y);
+                }
 
-                file << "    " << name << "[" << (x / 2) << "][" << y << "] = 5'd" << m_palette.at(pixelPair) << ";\n";
+                file << "    " << name << "[" << (x / pixelSet.size()) << "][" << y << "] = 6'd" << m_palette.at(pixelSet) << ";\n";
             }
         }
 
@@ -244,8 +253,8 @@ public:
     }
 
 private:
-    std::map<PixelPair, unsigned int> m_pixelPairHistogram;
-    std::map<PixelPair, unsigned int> m_palette;
+    std::map<PixelSet, unsigned int> m_pixelSetHistogram;
+    std::map<PixelSet, unsigned int> m_palette;
 };
 
 int main(int argc, char** argv)
