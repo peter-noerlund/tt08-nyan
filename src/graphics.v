@@ -48,10 +48,8 @@ module graphics
 
     assign vga_pmod = {hsync, blue[0], green[0], red[0], vsync, blue[1], green[1], red[1]};
 
-    /* verilator lint_off WIDTHTRUNC */
-    assign bitmap_x = (pixel_x - NYAN_LEFT) >> NYAN_SCALE_BITS;
-    assign bitmap_y = (pixel_y - NYAN_TOP) >> NYAN_SCALE_BITS;
-    /* verilator lint_on WIDTHTRUNC */
+    assign bitmap_x = 6'((pixel_x - X_PIXEL_BITS'(NYAN_LEFT)) >> NYAN_SCALE_BITS);
+    assign bitmap_y = 5'((pixel_y - Y_PIXEL_BITS'(NYAN_TOP)) >> NYAN_SCALE_BITS);
  
     `include "palette.vh"
     `include "frame0.vh"
