@@ -47,3 +47,24 @@ target_compile_features(make_music PRIVATE cxx_std_20)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(make_music PRIVATE -Wall -W -Wextra -Wpedantic)
 endif()
+
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/user_config.json
+    COMMAND . venv/bin/activate && ./tt/tt_tool.py --create-user-config --openlane2
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/config.json
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generate user config"
+)
+
+add_custom_target(harden
+    COMMAND . venv/bin/activate && ./tt/tt_tool.py --harden --openlane2
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/user_config.json
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Harden design"
+)
+
+add_custom_target(fpga-bitstream
+    COMMAND . venv/bin/activate && ./tt/tt_tool.py --create-fpga-bitstream
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generate FPGA bitstream"
+)
