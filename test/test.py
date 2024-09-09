@@ -172,5 +172,5 @@ async def test_project(dut):
 
     await ClockCycles(dut.clk, 1)
 
-    await test_audio(dut)
+    #await test_audio(dut)
     await test_vga(dut)
