@@ -2,8 +2,8 @@
 
 module graphics
     #(
-        parameter VGA_WIDTH = 640,
-        parameter VGA_HEIGHT = 480,
+        parameter H_PIXELS = 640,
+        parameter V_PIXELS = 480,
 
         parameter H_FRONT_PORCH = 16,
         parameter H_SYNC_PULSE = 96,
@@ -20,8 +20,8 @@ module graphics
         output wire [7:0] vga_pmod
     );
 
-    localparam X_PIXEL_BITS = $clog2(VGA_WIDTH + H_FRONT_PORCH + H_SYNC_PULSE + H_BACK_PORCH);
-    localparam Y_PIXEL_BITS = $clog2(VGA_HEIGHT + V_FRONT_PORCH + V_SYNC_PULSE + V_BACK_PORCH);
+    localparam X_PIXEL_BITS = $clog2(H_PIXELS + H_FRONT_PORCH + H_SYNC_PULSE + H_BACK_PORCH);
+    localparam Y_PIXEL_BITS = $clog2(V_PIXELS + V_FRONT_PORCH + V_SYNC_PULSE + V_BACK_PORCH);
 
     localparam NYAN_SCALE_BITS = 3;
     localparam NYAN_SCALE = 2 ** NYAN_SCALE_BITS;
@@ -67,23 +67,23 @@ module graphics
             pixel_y <= {Y_PIXEL_BITS{1'b0}};
             frame_counter <= 5'd0;
         end else begin
-            if (pixel_x == VGA_WIDTH + H_FRONT_PORCH) begin
+            if (pixel_x == H_PIXELS + H_FRONT_PORCH) begin
                 hsync <= 1'b0;
             end
-            if (pixel_x == VGA_WIDTH + H_FRONT_PORCH + H_SYNC_PULSE) begin
+            if (pixel_x == H_PIXELS + H_FRONT_PORCH + H_SYNC_PULSE) begin
                 hsync <= 1'b1;
             end
 
-            if (pixel_y == VGA_HEIGHT + V_FRONT_PORCH) begin
+            if (pixel_y == V_PIXELS + V_FRONT_PORCH) begin
                 vsync <= 1'b0;
             end
-            if (pixel_y == VGA_HEIGHT + V_FRONT_PORCH + V_SYNC_PULSE) begin
+            if (pixel_y == V_PIXELS + V_FRONT_PORCH + V_SYNC_PULSE) begin
                 vsync <= 1'b1;
             end
 
-            if (pixel_x >= VGA_WIDTH + H_FRONT_PORCH + H_SYNC_PULSE + H_BACK_PORCH - 1) begin
+            if (pixel_x >= H_PIXELS + H_FRONT_PORCH + H_SYNC_PULSE + H_BACK_PORCH - 1) begin
                 pixel_x <= {X_PIXEL_BITS{1'b0}};
-                if (pixel_y >= VGA_HEIGHT + V_FRONT_PORCH + V_SYNC_PULSE + V_BACK_PORCH - 1) begin
+                if (pixel_y >= V_PIXELS + V_FRONT_PORCH + V_SYNC_PULSE + V_BACK_PORCH - 1) begin
                     pixel_y <= {Y_PIXEL_BITS{1'b0}};
                     frame_counter <= frame_counter + 5'd1;
                 end else begin
@@ -108,7 +108,7 @@ module graphics
             end else if (pixel_x < 64 && pixel_y >= NYAN_TOP && pixel_y < NYAN_BOTTOM) begin
                 {red, green, blue} <=
                     palette[frame_counter[4] == 1'b0 ? frame0[0][bitmap_y] : frame1[0][bitmap_y]][0];
-            end else if (pixel_x < VGA_WIDTH && pixel_y < VGA_HEIGHT) begin
+            end else if (pixel_x < H_PIXELS && pixel_y < V_PIXELS) begin
                 {red, green, blue} <= 6'b000111;
             end else begin
                 {red, green, blue} <= 6'b000000;
