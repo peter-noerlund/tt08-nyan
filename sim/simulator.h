@@ -94,7 +94,7 @@ private:
         // Audio stuff
         unsigned int pwm_pos = 0;
         unsigned int pwm_high = 0;
-        std::vector<std::uint16_t> samples;
+        std::vector<std::int16_t> samples;
         std::ofstream stream;
 
         std::array<std::uint8_t, 64> filler1;

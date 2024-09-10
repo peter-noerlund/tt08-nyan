@@ -254,7 +254,7 @@ void Simulator::updateAudio(Context& context)
     {
         if (context.recording.load(std::memory_order_acquire))
         {
-            auto sample = static_cast<std::uint16_t>((static_cast<float>(context.pwm_high) / 260.0) * 65535.0);
+            auto sample = static_cast<std::int16_t>((static_cast<float>(context.pwm_high) / 260.0) * 65535.0 - 32768.0);
             context.samples.push_back(sample);
 
             if (context.samples.size() == 96000)
