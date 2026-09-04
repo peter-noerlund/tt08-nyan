@@ -8,7 +8,7 @@ find_package(asio CONFIG)
 
 if(yosys_FOUND AND icestorm_FOUND AND nextpnr_FOUND)
     set(FPGA_CONSTRAINTS_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../pico-ice/pico-ice.pcf)
-    set(FPGA_TARGET_FREQ 25)
+    set(FPGA_TARGET_FREQ 25.175)
 
     add_custom_target(
         pico-ice-synth
@@ -17,7 +17,7 @@ if(yosys_FOUND AND icestorm_FOUND AND nextpnr_FOUND)
 
     add_custom_command(
         OUTPUT pico-ice.json
-        COMMAND ${YOSYS_PATH} -q -p "synth_ice40 -device u -top top -spram -dsp -json pico-ice.json" -l pico-ice.log ${CMAKE_CURRENT_SOURCE_DIR}/../pico-ice/top.sv ${CMAKE_CURRENT_SOURCE_DIR}/../src/tt_um_nyan.sv ${CMAKE_CURRENT_SOURCE_DIR}/../src/graphics.sv ${CMAKE_CURRENT_SOURCE_DIR}/../src/music.sv pico-ice-pll.v
+        COMMAND ${YOSYS_PATH} -q -p "synth_ice40 -dff -device u -top top -spram -dsp -json pico-ice.json" -l pico-ice.log ${CMAKE_CURRENT_SOURCE_DIR}/../pico-ice/top.sv ${CMAKE_CURRENT_SOURCE_DIR}/../src/tt_um_nyan.sv ${CMAKE_CURRENT_SOURCE_DIR}/../src/graphics.sv ${CMAKE_CURRENT_SOURCE_DIR}/../src/music.sv pico-ice-pll.v
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../pico-ice/top.sv ${CMAKE_CURRENT_SOURCE_DIR}/../src/tt_um_nyan.sv ${CMAKE_CURRENT_SOURCE_DIR}/../src/graphics.sv ${CMAKE_CURRENT_SOURCE_DIR}/../src/music.sv pico-ice-pll.v
     )
 
@@ -41,7 +41,7 @@ if(yosys_FOUND AND icestorm_FOUND AND nextpnr_FOUND)
     add_custom_command(
         OUTPUT pico-ice.bin
         COMMAND ${ICEPACK_PATH} pico-ice.asc pico-ice.bin
-        DEPENDS pico-ice.asc pico-ice_timing.txt
+        DEPENDS pico-ice.asc #pico-ice_timing.txt
     )
 endif()
 
