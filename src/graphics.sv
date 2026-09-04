@@ -123,6 +123,8 @@ module graphics
                     frame0[bitmap_x[BITMAP_PIXEL_X_BITS - 1 : 2]][bitmap_y] :
                     frame1[bitmap_x[BITMAP_PIXEL_X_BITS - 1 : 2]][bitmap_y]
                 ][bitmap_x[1:0]];
+            end else if (pixel_x > H_PIXELS || pixel_y > V_PIXELS) begin
+                {red, green, blue} <= 6'b000000;
             end else begin
                 {red, green, blue} <= 6'b000111;
             end
