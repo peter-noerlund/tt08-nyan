@@ -4,69 +4,64 @@ list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 project(tt08-nyan LANGUAGES CXX)
 
-find_package(Qt5 REQUIRED COMPONENTS Widgets OpenGL)
-find_package(verilator REQUIRED)
-
-qt5_generate_moc(sim/window.h ${CMAKE_CURRENT_BINARY_DIR}/moc_window.cpp)
-qt5_generate_moc(sim/monitor.h ${CMAKE_CURRENT_BINARY_DIR}/moc_monitor.cpp)
-
-add_executable(tt08-nyan
-    sim/main.cpp
-    sim/monitor.cpp
-    sim/simulator.cpp
-    sim/window.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/moc_window.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/moc_monitor.cpp
-)
-target_include_directories(tt08-nyan PRIVATE sim)
-target_compile_features(tt08-nyan PRIVATE cxx_std_20)
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_compile_options(tt08-nyan PRIVATE -Wall -W -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-sign-compare $<$<CONFIG:Release>:-march=native -flto>)
-endif()
-target_link_libraries(tt08-nyan PRIVATE $<$<CONFIG:Release>:-flto>)
-target_link_libraries(tt08-nyan PRIVATE Qt5::Widgets Qt5::OpenGL)
-
-verilate(tt08-nyan
-    TOP_MODULE tt_um_nyan
-    OPT_FAST "-O3 -march=native"
-    VERILATOR_ARGS -Wall -I${CMAKE_CURRENT_SOURCE_DIR}/src
-    SOURCES
-    src/tt_um_nyan.sv
-    src/graphics.sv
-    src/music.sv
-)
-
-add_executable(make_bitmaps tools/make_bitmaps.cpp)
-target_compile_features(make_bitmaps PRIVATE cxx_std_20)
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_compile_options(make_bitmaps PRIVATE -Wall -W -Wextra -Wpedantic)
-endif()
-
-add_executable(make_music tools/make_music.cpp)
-target_compile_features(make_music PRIVATE cxx_std_20)
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_compile_options(make_music PRIVATE -Wall -W -Wextra -Wpedantic)
-endif()
+find_package(Git REQUIRED)
+find_package(Python COMPONENTS Interpreter REQUIRED)
 
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/user_config.json
-    COMMAND . venv/bin/activate && ./tt/tt_tool.py --create-user-config --openlane2
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/config.json
+    COMMAND . venv/bin/activate && tt/tt_tool.py --create-user-config
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/config.json ${CMAKE_CURRENT_SOURCE_DIR}/info.yaml ${CMAKE_CURRENT_SOURCE_DIR}/tt/tt_tool.py ${CMAKE_CURRENT_SOURCE_DIR}/venv/bin/python
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Generate user config"
 )
 
-add_custom_target(harden
-    COMMAND . venv/bin/activate && ./tt/tt_tool.py --harden --openlane2
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/user_config.json
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/tt/tt_tool.py
+    COMMAND ${GIT_EXECUTABLE} clone https://github.com/TinyTapeout/tt-support-tools tt
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Harden design"
 )
 
-add_custom_target(fpga-bitstream
-    COMMAND . venv/bin/activate && ./tt/tt_tool.py --create-fpga-bitstream
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/venv/bin/python
+    COMMAND ${Python_EXECUTABLE} -m venv venv
+    COMMAND venv/bin/pip install --upgrade pip
+    COMMAND venv/bin/pip install -r tt/requirements.txt
+    COMMAND venv/bin/pip install librelane==3.0.3
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tt/tt_tool.py
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Generate FPGA bitstream"
 )
 
+add_custom_target(
+    harden
+    COMMAND . venv/bin/activate && tt/tt_tool.py --harden
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/user_config.json ${CMAKE_CURRENT_SOURCE_DIR}/tt/tt_tool.py ${CMAKE_CURRENT_SOURCE_DIR}/venv/bin/python
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_custom_target(
+    create-png
+    COMMAND . venv/bin/activate && tt/tt_tool.py --create-png
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tt/tt_tool.py ${CMAKE_CURRENT_SOURCE_DIR}/venv/bin/python
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_custom_target(
+    create-pdf
+    COMMAND . venv/bin/activate && tt/tt_tool.py --create-pdf
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tt/tt_tool.py ${CMAKE_CURRENT_SOURCE_DIR}/venv/bin/python
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_custom_target(
+    create-summary
+    COMMAND . venv/bin/activate && tt/tt_tool.py --print-warnings > ${CMAKE_CURRENT_BINARY_DIR}/summary.md
+    COMMAND . venv/bin/activate && tt/tt_tool.py --print-stats >> ${CMAKE_CURRENT_BINARY_DIR}/summary.md
+    COMMAND scripts/clock_summary.py >> ${CMAKE_CURRENT_BINARY_DIR}/summary.md
+    COMMAND . venv/bin/activate && tt/tt_tool.py --print-cell-summary >> ${CMAKE_CURRENT_BINARY_DIR}/summary.md
+    COMMAND . venv/bin/activate && tt/tt_tool.py --print-cell-category >> ${CMAKE_CURRENT_BINARY_DIR}/summary.md
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tt/tt_tool.py ${CMAKE_CURRENT_SOURCE_DIR}/venv/bin/python
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_subdirectory(tools)
+add_subdirectory(sim)
 add_subdirectory(pico-ice)
