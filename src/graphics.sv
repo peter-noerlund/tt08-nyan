@@ -51,6 +51,8 @@ module graphics
     reg [4:0] frame_counter;
     reg render_x;
     reg render_y;
+    reg blank_x;
+    reg blank_y;
 
     wire [BITMAP_PIXEL_X_BITS - 1 : 0] bitmap_x;
     wire [BITMAP_PIXEL_Y_BITS - 1 : 0] bitmap_y;
@@ -77,7 +79,20 @@ module graphics
             frame_counter <= 5'd0;
             render_x <= 1'b1;
             render_y <= 1'b0;
+            blank_x <= 1'b0;
+            blank_y <= 1'b0;
         end else begin
+            if (pixel_x == H_PIXELS - 1) begin
+                blank_x <= 1'b1;
+            end else if (pixel_x == H_PIXELS + H_FRONT_PORCH + H_SYNC_PULSE + H_BACK_PORCH - 1) begin
+                blank_x <= 1'b0;
+            end
+            if (pixel_y == V_PIXELS - 1) begin
+                blank_y <= 1'b1;
+            end else if (pixel_y == V_PIXELS + V_FRONT_PORCH + V_SYNC_PULSE + V_BACK_PORCH - 1) begin
+                blank_y <= 1'b0;
+            end
+
             if (pixel_x == H_PIXELS + H_FRONT_PORCH) begin
                 hsync <= 1'b0;
             end
@@ -123,7 +138,7 @@ module graphics
                     frame0[bitmap_x[BITMAP_PIXEL_X_BITS - 1 : 2]][bitmap_y] :
                     frame1[bitmap_x[BITMAP_PIXEL_X_BITS - 1 : 2]][bitmap_y]
                 ][bitmap_x[1:0]];
-            end else if (pixel_x > H_PIXELS || pixel_y > V_PIXELS) begin
+            end else if (blank_x || blank_y) begin
                 {red, green, blue} <= 6'b000000;
             end else begin
                 {red, green, blue} <= 6'b000111;
