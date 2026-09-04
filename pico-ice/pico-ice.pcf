@@ -1,0 +1,37 @@
+# Clock
+set_io --warn-no-port ICE_CLK   35
+set_frequency ICE_CLK 48
+
+set_io --warn-no-port   LED_G   39
+set_io --warn-no-port   LED_B   40
+set_io --warn-no-port   LED_R   41
+
+# ICE_PMOD0 (lower left PMOD, near SW1, next to RP2040)
+set_io --warn-no-port   ICE_PMOD0[0]    4
+set_io --warn-no-port   ICE_PMOD0[1]    2
+set_io --warn-no-port   ICE_PMOD0[2]    47
+set_io --warn-no-port   ICE_PMOD0[3]    45
+set_io --warn-no-port   ICE_PMOD0[4]    3
+set_io --warn-no-port   ICE_PMOD0[5]    48
+set_io --warn-no-port   ICE_PMOD0[6]    46
+set_io --warn-no-port   ICE_PMOD0[7]    44
+
+# ICE_PMOD1 (upper left PMOD, next to ICE40UP5K)
+set_io --warn-no-port   ICE_PMOD1[0] 43
+set_io --warn-no-port   ICE_PMOD1[1] 38
+set_io --warn-no-port   ICE_PMOD1[2] 34
+set_io --warn-no-port   ICE_PMOD1[3] 31
+set_io --warn-no-port   ICE_PMOD1[4] 42
+set_io --warn-no-port   ICE_PMOD1[5] 36
+set_io --warn-no-port   ICE_PMOD1[6] 32
+set_io --warn-no-port   ICE_PMOD1[7] 28
+
+# ICE_PMOD2 (upper right PMOD, next to ICE40UP5K, shared with ICE2040)
+#set_io --warn-no-port   ICE_PMOD2[0] 27
+#set_io --warn-no-port   ICE_PMOD2[1] 25
+#set_io --warn-no-port   ICE_PMOD2[2] 21
+#set_io --warn-no-port   ICE_PMOD2[3] 19
+#set_io --warn-no-port   ICE_PMOD2[4] 26
+#set_io --warn-no-port   ICE_PMOD2[5] 23
+#set_io --warn-no-port   ICE_PMOD2[6] 20
+#set_io --warn-no-port   ICE_PMOD2[7] 18

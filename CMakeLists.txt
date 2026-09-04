@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+
 project(tt08-nyan LANGUAGES CXX)
 
 find_package(Qt5 REQUIRED COMPONENTS Widgets OpenGL)
 find_package(verilator REQUIRED)
-
-file(GLOB VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hdl/*.v)
 
 qt5_generate_moc(sim/window.h ${CMAKE_CURRENT_BINARY_DIR}/moc_window.cpp)
 qt5_generate_moc(sim/monitor.h ${CMAKE_CURRENT_BINARY_DIR}/moc_monitor.cpp)
@@ -68,3 +68,5 @@ add_custom_target(fpga-bitstream
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Generate FPGA bitstream"
 )
+
+add_subdirectory(pico-ice)
